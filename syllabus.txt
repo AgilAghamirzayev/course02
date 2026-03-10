@@ -19,6 +19,7 @@ Lesson 1: Program Orientation, Java Ecosystem, and Environment Setup
 - Installing JDK and IntelliJ IDEA, project setup
 - Writing and running the first Java program
 
+
 Lesson 2: Git and GitHub Fundamentals
 - Why version control matters in real projects
 - Git architecture (working tree, staging, local repository)
