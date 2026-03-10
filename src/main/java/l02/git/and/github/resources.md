@@ -14,6 +14,9 @@
 4. [Learn Git Branching](https://learngitbranching.js.org/)  
    An interactive visual tool to practice branching, merging, rebasing, and history navigation.
 
+5. [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+   A standardized format for commit messages that helps to generate changelogs and automate version management.
+
 ## Optional: Advanced Git Internals
 
 1. [Git Objects (Pro Git Book)](https://git-scm.com/book/en/v2/Git-Internals-Git-Objects)  
