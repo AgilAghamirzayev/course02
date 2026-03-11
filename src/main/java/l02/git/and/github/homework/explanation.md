@@ -388,6 +388,64 @@ git merge feature-login
 
 Merging combines branch changes into the target branch.
 
+## 16.1 Merge vs Rebase (`-i`)
+
+Both `merge` and `rebase` combine changes, but they shape history differently.
+
+### `git merge`
+
+- Keeps the original branch history.
+- Creates a merge commit (when needed).
+- Best for shared/public branches because it is safe and non-destructive.
+
+Example:
+
+```bash
+git switch main
+git merge feature-login
+```
+
+### `git rebase`
+
+- Replays your feature commits on top of another branch (usually `main`).
+- Produces a cleaner, linear commit history.
+- Rewrites commit history, so use carefully.
+
+Example:
+
+```bash
+git switch feature-login
+git rebase main
+```
+
+### `git rebase -i` (Interactive Rebase)
+
+Use interactive rebase to clean commits before opening a Pull Request.
+
+Example:
+
+```bash
+git rebase -i HEAD~3
+```
+
+Common actions in interactive rebase:
+
+- `pick` -> keep commit as is
+- `reword` -> edit commit message
+- `squash` -> combine commit with previous one and edit message
+- `fixup` -> combine commit with previous one and keep previous message
+- `drop` -> remove commit
+
+### Practical Rule
+
+- Use `merge` on team/shared branches (`main`, `develop`).
+- Use `rebase -i` on your own local feature branch to clean history.
+- Avoid rebasing commits that are already pushed and used by others.
+
+### Visual Comparison
+
+![Git Merge vs Git Rebase](./merge-rebase-visual.png)
+
 ## 17. Connect to a GitHub Repository
 
 Add a remote repository:
