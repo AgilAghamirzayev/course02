@@ -25,8 +25,10 @@ By the end of the program, students can design, build, test, secure, and deploy 
 - [ ] Why version control matters in real projects
 - [ ] Git architecture (working tree, staging, local repository)
 - [ ] Core commands: `init`, `add`, `commit`, `status`, `log`
+- [ ] Git Branching Strategies: `main`, `feature`, `bugfix` and mering
 - [ ] `.gitignore` and clean repository practices
 - [ ] GitHub remote workflow and README basics
+- [ ] How to use git in IntelliJ productively
 
 ### Lesson 3: Variables, Data Types, Operators, and Console I/O
 **In-class coverage:**
