@@ -277,4 +277,4 @@ A Java class named `Task12HardCheckoutDebug` with runnable `main`.
 
 ## Final Submission
 
-Submit the 12 Java classes and confirm each class runs from `main` without `Scanner` and without `if / else`.
+Submit the 12 Java classes and confirm each class runs from `main`.
