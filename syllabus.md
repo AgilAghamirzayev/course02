@@ -70,7 +70,7 @@ with Spring Boot, PostgreSQL, Docker, and Kubernetes fundamentals.
 - [ ] Searching and counting patterns in arrays/strings
 - [ ] Edge-case handling and defensive checks
 
-### Lesson 6: Problem Solving, Refactoring, and Big-O Basics
+### Lesson 6: Algorithm and Data Structure, Problem Solving, and Big-O Basics
 
 **In-class coverage:**
 
