@@ -1,4 +1,4 @@
-package l05.arrays.strings.addition;
+package l05.arrays.strings.inclass;
 
 public class StringPractice1 {
     public static void main(String[] args) {
