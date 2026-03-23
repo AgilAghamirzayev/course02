@@ -1,4 +1,4 @@
-package l05.arrays.strings.addition;
+package l05.arrays.strings.inclass;
 
 public class Student3DExample {
 
