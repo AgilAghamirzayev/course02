@@ -1,4 +1,4 @@
-package l4.controlflow.loops.inclass;
+package l04.controlflow.loops.inclass;
 
 public class Test11 {
 

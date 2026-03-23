@@ -1,14 +1,14 @@
-package l4.controlflow.loops.inclass;
+package l04.controlflow.loops.inclass;
 
-public class Test10 {
+public class Test9 {
 
     public static void main(String[] args) {
         int step = 1000;
 
-        do {
+        while (step <= 100) {
             System.out.println("Addim at: " + step);
             step++;
-        } while (step <= 100);
+        }
 
     }
 

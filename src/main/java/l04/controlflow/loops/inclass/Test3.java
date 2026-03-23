@@ -1,14 +1,19 @@
-package l4.controlflow.loops.inclass;
+package l04.controlflow.loops.inclass;
 
-public class Test2 {
+import java.util.Scanner;
+
+public class Test3 {
 
     public static void main(String[] args) {
-        double withdrawalAmount = 100;
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter withdrawal amount: ");
+        double withdrawalAmount = scanner.nextDouble();
         double accountBalance = 100;
 
         if (accountBalance <= 0) {
             System.out.println("You have no money");
-        }  else if (withdrawalAmount > accountBalance) {
+        } else if (withdrawalAmount > accountBalance) {
             System.out.println("You don't have enough money");
         } else if (withdrawalAmount > 100) {
             System.out.println("You can't withdraw more than 100, You need OTP");
