@@ -13,7 +13,7 @@
 By the end of the program, students can design, build, test, secure, and deploy a production-style Java backend service
 with Spring Boot, PostgreSQL, Docker, and Kubernetes fundamentals.
 
-## Month 1 (Lessons 1-8): Java and Programming Foundations
+## Month 1 (Lessons 1–8): Java and Programming Foundations
 
 ### Lesson 1: Program Orientation, Java Ecosystem, and Environment Setup
 
@@ -50,7 +50,7 @@ with Spring Boot, PostgreSQL, Docker, and Kubernetes fundamentals.
 - [ ] Input with `Scanner`, output formatting best practices
 - [ ] Debugging small logic programs
 
-### Lesson 4: Control Flow, Loops and Methods
+### Lesson 4: Control Flow, Loops, and Methods
 
 **In-class coverage:**
 
@@ -65,12 +65,14 @@ with Spring Boot, PostgreSQL, Docker, and Kubernetes fundamentals.
 **In-class coverage:**
 
 - [ ] Array creation, indexing, traversal, and boundaries
+- [ ] Operations in array, 2D array, 3D array 
 - [ ] String internals, immutability, and common APIs
-- [ ] `StringBuilder` for efficient string manipulation
+- [ ] Stack, Heap, and String Pool
+- [ ] `StringBuilder` and `StringBuffer` for efficient string manipulation
 - [ ] Searching and counting patterns in arrays/strings
 - [ ] Edge-case handling and defensive checks
 
-### Lesson 6: Algorithm and Data Structure, Problem Solving, and Big-O Basics
+### Lesson 6: Algorithm and Data Structure, Problem-Solving, and Big-O Basics
 
 **In-class coverage:**
 
@@ -226,7 +228,7 @@ with Spring Boot, PostgreSQL, Docker, and Kubernetes fundamentals.
 
 **In-class coverage:**
 
-- [ ] Process vs thread model
+- [ ] Process vs. a thread model
 - [ ] Thread lifecycle and scheduling intuition
 - [ ] Creating threads (`Runnable` vs `Thread`)
 - [ ] Interruption and cooperative cancellation
@@ -327,7 +329,7 @@ with Spring Boot, PostgreSQL, Docker, and Kubernetes fundamentals.
 
 **In-class coverage:**
 
-- [ ] Spring Boot architecture and auto-configuration
+- [ ] Spring Boot architecture and autoconfiguration
 - [ ] IoC container, beans, and dependency injection
 - [ ] Bean scopes and wiring patterns
 - [ ] Creating a first REST controller/service
@@ -421,15 +423,15 @@ with Spring Boot, PostgreSQL, Docker, and Kubernetes fundamentals.
 - [ ] Full review of Spring API and data layer topics
 - [ ] Quiz and service hardening exercise
 - [ ] Feedback on architecture and coding style
-- [ ] Preparation for security module
+- [ ] Preparation for the security module
 
-## Month 6 (Lessons 41-48): Security, Integration, Testing, and Architecture
+## Month 6 (Lessons 41–48): Security, Integration, Testing, and Architecture
 
 ### Lesson 41: Spring Security Foundations
 
 **In-class coverage:**
 
-- [ ] Authentication vs authorization
+- [ ] Authentication vs. authorization
 - [ ] Security filter chain fundamentals
 - [ ] Password hashing principles
 - [ ] Endpoint access rules and CORS setup
@@ -481,7 +483,7 @@ with Spring Boot, PostgreSQL, Docker, and Kubernetes fundamentals.
 
 - [ ] Monolith vs microservices trade-offs
 - [ ] Service boundaries and bounded contexts
-- [ ] Synchronous vs asynchronous communication options
+- [ ] Synchronous vs. asynchronous communication options
 - [ ] Deployment and operational complexity awareness
 - [ ] Migration strategy from monolith to services
 
