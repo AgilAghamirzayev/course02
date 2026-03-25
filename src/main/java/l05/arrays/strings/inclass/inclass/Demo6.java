@@ -1,4 +1,4 @@
-package l05.arrays.strings.inclass;
+package l05.arrays.strings.inclass.inclass;
 
 public class Demo6 {
 
