@@ -88,7 +88,7 @@ with Spring Boot, PostgreSQL, Docker, and Kubernetes fundamentals.
 
 - [ ] Classes, objects, fields, methods, constructors
 - [ ] Encapsulation and access modifiers
-- [ ] `this` keyword and object state management
+- [ ] `this` and `this()` keyword and object state management
 - [ ] Designing simple domain models
 - [ ] OOP coding lab with mini assignment
 
@@ -103,25 +103,24 @@ with Spring Boot, PostgreSQL, Docker, and Kubernetes fundamentals.
 
 ## Month 2 (Lessons 9-16): Core Java for Backend Development
 
-### Lesson 9: Inheritance, Polymorphism, and Object Class
+### Lesson 9: Inheritance, and Object Class
 
 **In-class coverage:**
 
 - [ ] Inheritance model and `extends`
 - [ ] Method overriding, dynamic dispatch, and `super`
 - [ ] `Object` class methods: `toString`, `equals`, `hashCode`
-- [ ] Polymorphism in real coding scenarios
 - [ ] Refactoring procedural code into OOP design
 
-### Lesson 10: Abstraction, Interfaces, and Design for Testability
+### Lesson 10: Polymorphism, Abstraction, Interfaces, and Design for Testability
 
 **In-class coverage:**
-
+- [ ] Polymorphism fundamentals: `instanceof`, method overloading, and method overriding
 - [ ] Abstract classes vs interfaces: selection criteria
 - [ ] Interface-based architecture and loose coupling
 - [ ] Composition over inheritance principle
-- [ ] Designing code for easier unit testing
 - [ ] Practical interface-driven implementation exercise
+- [ ] Object Comparing and equals() method
 
 ### Lesson 11: Enums, Wrapper Types, var, and Parameter Passing
 
