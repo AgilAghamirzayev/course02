@@ -165,7 +165,7 @@ A Java class named `Task06MediumSlidingWindowMaxSum` with runnable `main`.
 
 A Java class named `Task07MediumBracketValidatorStack` with runnable `main`.
 
-## Task 8 - Medium Level (Word Frequency Map)
+## Task 8 - Medium Level (Word Frequency Map) (Don't do this) (For future)
 
 ### Instructions
 
