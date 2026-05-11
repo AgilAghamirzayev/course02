@@ -1,0 +1,41 @@
+# timestamp|level|message
+2026-05-06T08:02:10|INFO|Service startup completed
+2026-05-06T08:05:12|ERROR|Authentication failed
+2026-05-06T08:07:44|ERROR|Authentication failed
+2026-05-06T08:11:09|WARNING|High login latency detected
+2026-05-06T08:14:28|ERROR|Token expired
+2026-05-06T08:18:52|ERROR|Authentication failed
+2026-05-06T08:21:16|ERROR|Token expired
+2026-05-06T08:29:35|INFO|Health check passed
+2026-05-06T08:41:50|ERROR|Authentication failed
+2026-05-06T08:56:03|ERROR|Token expired
+
+2026-05-06T10:03:18|INFO|Order sync started
+2026-05-06T10:10:42|ERROR|Null pointer in OrderService
+2026-05-06T10:13:01|WARNING|Slow downstream response
+2026-05-06T10:44:27|ERROR|Null pointer in OrderService
+2026-05-06T10:51:11|INFO|Order sync finished
+
+2026-05-06T15:01:09|INFO|Request started /orders/42
+2026-05-06T15:02:16|ERROR|Database connection timeout
+2026-05-06T15:06:58|ERROR|Payment provider unavailable
+2026-05-06T15:08:23|ERROR|Database connection timeout
+2026-05-06T15:11:40|ERROR|Database connection timeout
+2026-05-06T15:16:04|WARNING|Retrying failed payment
+2026-05-06T15:21:32|ERROR|Database connection timeout
+2026-05-06T15:28:19|ERROR|Database connection timeout
+2026-05-06T15:33:07|ERROR|Payment provider unavailable
+2026-05-06T15:39:26|ERROR|Database connection timeout
+2026-05-06T15:49:41|ERROR|Payment provider unavailable
+2026-05-06T15:55:08|ERROR|Database connection timeout
+
+2026-05-06T23:03:55|INFO|Batch job started
+2026-05-06T23:05:47|ERROR|Memory allocation failed
+2026-05-06T23:08:21|ERROR|Memory allocation failed
+2026-05-06T23:15:18|ERROR|Disk write failed
+2026-05-06T23:26:39|ERROR|Memory allocation failed
+2026-05-06T23:33:10|WARNING|GC pause over threshold
+2026-05-06T23:37:22|ERROR|Memory allocation failed
+2026-05-06T23:45:53|ERROR|Disk write failed
+2026-05-06T23:51:06|ERROR|Memory allocation failed
+2026-05-06T23:58:44|INFO|Batch job completed

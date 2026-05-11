@@ -1,11 +1,12 @@
-package l14.colelctions.s1;
+package l14.colelctions.inclass.s1;
 
 import java.util.Set;
 
 public class Task09Main {
     public static void main(String[] args) {
-        BookIndexService service = new BookIndexService();
+        BookIndexService2 service = new BookIndexService2();
 
+        // Adding Data
         service.indexBook(new Book(1, "The Hobbit", "J.R.R. Tolkien", Set.of("Fantasy", "Adventure")));
         service.indexBook(new Book(2, "Java Concurrency", "Brian Goetz", Set.of("Tech", "Java")));
         service.indexBook(new Book(3, "The Silmarillion", "J.R.R. Tolkien", Set.of("Fantasy", "Lore")));

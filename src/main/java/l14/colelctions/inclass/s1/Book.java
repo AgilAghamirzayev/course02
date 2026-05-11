@@ -1,4 +1,4 @@
-package l14.colelctions.s1;
+package l14.colelctions.inclass.s1;
 
 import java.util.Objects;
 import java.util.Set;
