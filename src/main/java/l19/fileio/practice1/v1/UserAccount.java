@@ -1,4 +1,4 @@
-package l19.fileio.practice1;
+package l19.fileio.practice1.v1;
 
 public record UserAccount(
         String id,
@@ -7,6 +7,7 @@ public record UserAccount(
         String saltBase64,
         String passwordHashHex
 ) {
+
     public UserAccount of(String[] userAccount) {
         return new UserAccount(
                 userAccount[0],

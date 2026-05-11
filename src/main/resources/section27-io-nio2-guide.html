@@ -1,0 +1,4497 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Section 27: Java I/O and NIO.2 - Slide-by-Slide Guide</title>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap");
+
+        :root {
+            --bg: #fffdf5;
+            --foreground: #1f1f1f;
+            --muted: #5a5f69;
+            --secondary: #f6efe0;
+            --dot-bg: #f7f5ee;
+            --dot-color: #d8d3c6;
+            --heading: #24304a;
+            --bodytext: #4e5f7c;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Plus Jakarta Sans", "Outfit", Inter, "Segoe UI", Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--foreground);
+            line-height: 1.55;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+        }
+
+        header,
+        nav {
+            display: none;
+        }
+
+        .slide {
+            display: none;
+            position: relative;
+            width: 100%;
+            height: 100dvh;
+            overflow: hidden;
+            padding: 14px 16px 90px;
+            background: #f5f0e3;
+            isolation: isolate;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        .slide-card {
+            position: relative;
+            width: min(1220px, 100%);
+            height: 100%;
+            margin: 0 auto;
+            border: 2px solid var(--foreground);
+            border-radius: 22px;
+            background: var(--dot-bg);
+            background-image: radial-gradient(var(--dot-color) 1.05px, transparent 1.05px);
+            background-size: 14px 14px;
+            box-shadow: 9px 9px 0 0 var(--foreground);
+            padding: clamp(14px, 1.5vw, 22px) clamp(18px, 2.2vw, 34px) clamp(20px, 2.4vw, 32px);
+            overflow: auto;
+            transform: rotate(-0.35deg);
+        }
+
+        .slide:nth-of-type(even) .slide-card {
+            transform: rotate(0.25deg);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            position: absolute;
+            right: 14px;
+            top: 12px;
+            border: 2px solid var(--foreground);
+            border-radius: 999px;
+            background: #f7c72f;
+            color: var(--foreground);
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: clamp(10px, 0.92vw, 12px);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            padding: 5px 10px;
+            box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.25);
+            min-width: 58px;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .slide h3 {
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            margin: 0 0 12px;
+            padding-right: 92px;
+            font-size: clamp(30px, 3.4vw, 52px);
+            line-height: 1.1;
+            font-weight: 850;
+            letter-spacing: 0;
+            color: var(--heading);
+        }
+
+        .lead {
+            margin: 0 0 14px;
+            padding: 10px 12px;
+            border: 2px solid var(--foreground);
+            border-radius: 12px;
+            background: color-mix(in srgb, var(--secondary) 82%, white 18%);
+            box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.18);
+            font-weight: 700;
+            color: var(--bodytext);
+            font-size: clamp(19px, 1.5vw, 24px);
+        }
+
+        .points {
+            margin: 10px 0 14px;
+            padding-left: 25px;
+            font-size: clamp(19px, 1.45vw, 23px);
+            line-height: 1.5;
+            color: var(--bodytext);
+        }
+
+        .points li {
+            margin: 8px 0;
+        }
+
+        .intro-card {
+            display: grid;
+            grid-template-rows: auto auto auto;
+            align-content: start;
+            gap: 12px;
+        }
+
+        .lesson-tag {
+            margin: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            min-height: 34px;
+            border: 2px solid var(--foreground);
+            border-radius: 999px;
+            background: #ffffff;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 12px;
+            font-weight: 800;
+            color: #2e3a54;
+            padding: 6px 12px;
+            box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.18);
+        }
+
+        .io-hero {
+            border: 2px solid var(--foreground);
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 5px 5px 0 0 rgba(0, 0, 0, 0.16);
+            padding: clamp(14px, 2vw, 22px);
+            display: grid;
+            grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.9fr);
+            gap: 18px;
+            align-items: center;
+            min-height: 0;
+        }
+
+        .intro-card h3 {
+            margin: 0 0 8px;
+            padding-right: 0;
+        }
+
+        .io-definition {
+            border: 2px solid var(--foreground);
+            border-radius: 12px;
+            background: #f8fbff;
+            padding: 12px 14px;
+        }
+
+        .io-definition h4 {
+            margin: 0 0 4px;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(24px, 2.1vw, 34px);
+            line-height: 1.1;
+            color: #223453;
+            text-transform: uppercase;
+        }
+
+        .io-definition p {
+            margin: 0;
+            color: #3e4f6a;
+            font-size: clamp(17px, 1.25vw, 21px);
+            line-height: 1.45;
+            font-weight: 600;
+        }
+
+        .io-focus {
+            margin: 12px 0 0;
+            padding-left: 22px;
+            color: #3f5271;
+            font-size: clamp(16px, 1.2vw, 20px);
+            line-height: 1.45;
+            font-weight: 700;
+        }
+
+        .io-focus li {
+            margin: 6px 0;
+        }
+
+        .io-lesson-map {
+            margin-top: 10px;
+            border: 2px solid #c8d7ea;
+            border-radius: 12px;
+            background: #f3f8ff;
+            padding: 8px;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 7px;
+        }
+
+        .io-map-item {
+            border: 2px solid #b8c6ef;
+            border-radius: 10px;
+            background: #ffffff;
+            padding: 6px 5px;
+            text-align: center;
+            color: #2f4060;
+            font-size: clamp(11px, 0.82vw, 14px);
+            line-height: 1.22;
+            font-weight: 800;
+        }
+
+        .io-family-box {
+            margin-top: 10px;
+            border: 2px solid var(--foreground);
+            border-radius: 12px;
+            background: #fff9ea;
+            padding: 10px 12px;
+            box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.14);
+            color: #33486a;
+            font-size: clamp(15px, 1.08vw, 18px);
+            line-height: 1.45;
+            font-weight: 600;
+        }
+
+        .io-family-box p {
+            margin: 0 0 6px;
+        }
+
+        .io-family-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .io-family-box ul {
+            margin: 0 0 6px;
+            padding-left: 18px;
+        }
+
+        .io-family-box li {
+            margin: 4px 0;
+        }
+
+        .io-visual {
+            display: grid;
+            gap: 10px;
+            align-content: start;
+        }
+
+        .io-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .io-card {
+            border: 2px solid var(--foreground);
+            border-radius: 12px;
+            padding: 10px 8px;
+            text-align: center;
+            color: #ffffff;
+            box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .io-card.input {
+            background: linear-gradient(160deg, #47bf74 0%, #2a9b57 100%);
+        }
+
+        .io-card.output {
+            background: linear-gradient(160deg, #4c90f4 0%, #2f6fd5 100%);
+        }
+
+        .io-icon {
+            font-size: clamp(42px, 4vw, 58px);
+            line-height: 1;
+            font-weight: 900;
+            text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .io-label {
+            margin-top: 4px;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: clamp(15px, 1.15vw, 18px);
+            font-weight: 800;
+            letter-spacing: 0.8px;
+        }
+
+        .io-small {
+            margin: 4px 0 0;
+            font-size: clamp(12px, 0.95vw, 14px);
+            font-weight: 700;
+            opacity: 0.95;
+        }
+
+        .io-flow {
+            margin: 0;
+            border: 2px solid var(--foreground);
+            border-radius: 10px;
+            background: #fff6e8;
+            color: #33486a;
+            font-size: clamp(14px, 1.05vw, 16px);
+            font-weight: 800;
+            text-align: center;
+            padding: 8px 10px;
+        }
+
+        @media (max-width: 980px) {
+            .io-hero {
+                grid-template-columns: 1fr;
+            }
+
+            .io-lesson-map {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .file-slide {
+            display: grid;
+            grid-template-rows: auto auto 1fr;
+            align-content: stretch;
+            gap: 10px;
+            height: 100%;
+        }
+
+        .file-head {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .file-number {
+            width: 44px;
+            height: 44px;
+            border: 2px solid var(--foreground);
+            border-radius: 999px;
+            background: #1d8f4f;
+            color: #ffffff;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 23px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .file-title {
+            margin: 0;
+            color: #1d6f41;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(34px, 3.1vw, 46px);
+            line-height: 1;
+            font-weight: 900;
+        }
+
+        .file-subtitle {
+            margin: 4px 0 0;
+            color: #33486a;
+            font-size: clamp(18px, 1.35vw, 22px);
+            font-weight: 700;
+            line-height: 1.35;
+        }
+
+        .file-top-desc {
+            margin: 2px 0 0;
+            color: #33486a;
+            font-size: clamp(20px, 1.45vw, 24px);
+            font-weight: 800;
+            line-height: 1.3;
+        }
+
+        .file-master-box {
+            border: 2px solid #a8baa6;
+            border-radius: 14px;
+            background: #f7fbf7;
+            padding: 10px;
+            box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 0.12);
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            gap: 10px;
+            min-height: 0;
+        }
+
+        .file-master-lead {
+            margin: 0;
+            border: 2px solid #9eb39d;
+            border-radius: 10px;
+            background: #ffffff;
+            color: #2f4060;
+            font-size: clamp(15px, 1.08vw, 18px);
+            line-height: 1.35;
+            font-weight: 800;
+            padding: 8px 10px;
+        }
+
+        .file-grid {
+            display: grid;
+            grid-template-columns: 0.95fr 1.25fr;
+            gap: 12px;
+            min-height: 0;
+            align-items: stretch;
+        }
+
+        .file-column {
+            display: grid;
+            gap: 10px;
+            min-height: 0;
+            align-content: stretch;
+        }
+
+        .file-column-left {
+            grid-template-rows: 1fr 1fr;
+        }
+
+        .file-column-left .file-box,
+        .file-column-right .file-box {
+            height: 100%;
+        }
+
+        .file-column-right .file-box {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            align-content: start;
+        }
+
+        .file-box {
+            border: 2px dashed #8daa8e;
+            border-radius: 12px;
+            background: #f8fff8;
+            padding: 10px 12px;
+        }
+
+        .file-box-solid {
+            border-style: solid;
+        }
+
+        .file-box h4 {
+            margin: 0 0 6px;
+            color: #1d6f41;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(21px, 1.65vw, 27px);
+            line-height: 1.12;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .analogy-wrap {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .map-visual {
+            width: 100px;
+            height: 100px;
+            border: 2px solid var(--foreground);
+            border-radius: 12px;
+            background: linear-gradient(145deg, #d9f0d9 0%, #b9dfb9 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-visual::before {
+            content: "";
+            position: absolute;
+            inset: 8px;
+            border: 2px solid #5f8f65;
+            border-radius: 10px;
+            background:
+                linear-gradient(60deg, transparent 46%, #7ca980 46%, #7ca980 54%, transparent 54%),
+                linear-gradient(-40deg, transparent 42%, #7ca980 42%, #7ca980 50%, transparent 50%),
+                linear-gradient(15deg, transparent 58%, #7ca980 58%, #7ca980 66%, transparent 66%);
+        }
+
+        .map-pin {
+            position: absolute;
+            right: 15px;
+            top: 14px;
+            width: 25px;
+            height: 25px;
+            border-radius: 999px;
+            background: #ff4f5a;
+            border: 2px solid #97323a;
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+        }
+
+        .map-pin::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 20px;
+            width: 2px;
+            height: 14px;
+            background: #97323a;
+            transform: translateX(-50%);
+        }
+
+        .analogy-text {
+            margin: 0;
+            color: #2f4060;
+            font-size: clamp(15px, 1.08vw, 18px);
+            line-height: 1.42;
+            font-weight: 700;
+        }
+
+        .check-list {
+            margin: 0;
+            padding-left: 0;
+            list-style: none;
+            color: #2f4060;
+            font-size: clamp(15px, 1.08vw, 18px);
+            line-height: 1.35;
+            font-weight: 700;
+        }
+
+        .check-list li {
+            margin: 4px 0;
+            display: grid;
+            grid-template-columns: 18px 1fr;
+            gap: 6px;
+            align-items: start;
+        }
+
+        .check-list li::before {
+            content: "✓";
+            color: #1d8f4f;
+            font-weight: 900;
+            line-height: 1.15;
+        }
+
+        .methods-title {
+            margin: 0 0 6px;
+            color: #1d6f41;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(22px, 1.7vw, 28px);
+            line-height: 1.1;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .methods-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 6px;
+            background: #ffffff;
+            border: 2px solid #a8baa6;
+            height: 100%;
+        }
+
+        .methods-table td {
+            border: 1px solid #b7c8b5;
+            padding: 6px 8px;
+            font-size: clamp(14px, 1vw, 16px);
+            line-height: 1.25;
+            color: #2f4060;
+            font-weight: 700;
+            vertical-align: top;
+        }
+
+        .methods-table td:first-child {
+            width: 45%;
+            color: #1d6f41;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: clamp(13px, 0.93vw, 15px);
+            font-weight: 800;
+            background: #f4fbf4;
+            white-space: nowrap;
+        }
+
+        .example-label {
+            margin: 0 0 6px;
+            color: #1d6f41;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(22px, 1.65vw, 27px);
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .example-code {
+            margin: 0;
+            border: 2px solid #1f304d;
+            border-radius: 10px;
+            background: #0f1f37;
+            color: #dbe8ff;
+            padding: 10px 12px;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: clamp(13px, 0.9vw, 15px);
+            line-height: 1.45;
+            overflow: auto;
+            white-space: pre;
+        }
+
+        .example-code .kw {
+            color: #ffd166;
+            font-weight: 800;
+        }
+
+        .note-box {
+            margin-top: 8px;
+            border: 2px solid #adc0ac;
+            border-radius: 10px;
+            background: #f9fff8;
+            padding: 7px 10px;
+            color: #2f4060;
+            font-size: clamp(14px, 1vw, 16px);
+            line-height: 1.3;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .file-example-row {
+            margin-top: 0;
+        }
+
+        .fis-slide {
+            display: grid;
+            align-content: start;
+            gap: 10px;
+        }
+
+        .fis-head {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .fis-number {
+            width: 44px;
+            height: 44px;
+            border: 2px solid var(--foreground);
+            border-radius: 999px;
+            background: #2349bf;
+            color: #ffffff;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 22px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .fis-title {
+            margin: 0;
+            color: #1f3e9d;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(34px, 3.1vw, 46px);
+            line-height: 1;
+            font-weight: 900;
+        }
+
+        .fis-subtitle {
+            margin: 3px 0 0;
+            color: #2f4060;
+            font-size: clamp(18px, 1.3vw, 22px);
+            font-weight: 800;
+            line-height: 1.35;
+        }
+
+        .fis-box {
+            border: 2px dashed #a5b6eb;
+            border-radius: 12px;
+            background: #f8faff;
+            padding: 10px 12px;
+        }
+
+        .fis-box h4 {
+            margin: 0 0 8px;
+            color: #2443aa;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(22px, 1.7vw, 28px);
+            font-weight: 800;
+            line-height: 1.1;
+            text-align: center;
+        }
+
+        .fis-analogy-wrap {
+            display: grid;
+            grid-template-columns: 122px 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .fis-icon-wrap {
+            width: 118px;
+            height: 118px;
+            border: 2px solid #7f91cf;
+            border-radius: 12px;
+            background: linear-gradient(145deg, #e9eeff 0%, #d4defe 100%);
+            display: grid;
+            place-items: center;
+            padding: 6px;
+            overflow: hidden;
+        }
+
+        .fis-icon-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+        }
+
+        .fis-text {
+            margin: 0;
+            color: #2f4060;
+            font-size: clamp(16px, 1.12vw, 18px);
+            line-height: 1.4;
+            font-weight: 700;
+        }
+
+        .fis-list {
+            margin: 0;
+            padding-left: 24px;
+            color: #2f4060;
+            font-size: clamp(16px, 1.12vw, 19px);
+            line-height: 1.35;
+            font-weight: 700;
+        }
+
+        .fis-list li {
+            margin: 4px 0;
+        }
+
+        .fis-example-title {
+            margin: 0 0 6px;
+            text-align: center;
+            color: #2443aa;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(23px, 1.75vw, 29px);
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .fis-code {
+            margin: 0;
+            border: 2px solid #1f304d;
+            border-radius: 10px;
+            background: #0f1f37;
+            color: #dbe8ff;
+            padding: 10px 12px;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: clamp(13px, 0.9vw, 15px);
+            line-height: 1.4;
+            white-space: pre;
+            overflow: auto;
+        }
+
+        .fis-code .kw {
+            color: #ffd166;
+            font-weight: 800;
+        }
+
+        .fis-warning {
+            margin-top: 8px;
+            border: 2px solid #efc99f;
+            border-radius: 10px;
+            background: #fff8ef;
+            color: #3f4355;
+            padding: 8px 10px;
+            font-size: clamp(15px, 1.06vw, 17px);
+            line-height: 1.35;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .fis-warning strong {
+            color: #cc6b1b;
+        }
+
+        #s3 .slide-card {
+            overflow: hidden;
+        }
+
+        .fstreams-slide {
+            display: grid;
+            grid-template-rows: auto auto 1fr auto auto;
+            align-content: stretch;
+            gap: 8px;
+            min-height: 100%;
+        }
+
+        .fstreams-head {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .fstreams-number {
+            width: 42px;
+            height: 42px;
+            border: 2px solid var(--foreground);
+            border-radius: 999px;
+            background: #2349bf;
+            color: #ffffff;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 21px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .fstreams-title {
+            margin: 0;
+            color: #1f3e9d;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(30px, 2.65vw, 40px);
+            line-height: 1;
+            font-weight: 900;
+            padding-right: 96px;
+        }
+
+        .fstreams-subtitle {
+            margin: 2px 0 0;
+            color: #2f4060;
+            font-size: clamp(15px, 1.04vw, 18px);
+            line-height: 1.3;
+            font-weight: 700;
+        }
+
+        .fstreams-overview {
+            border: 2px solid #b8c6ef;
+            border-radius: 10px;
+            background: #f7faff;
+            padding: 7px 10px;
+            color: #2f4060;
+            font-size: clamp(13px, 0.9vw, 15px);
+            line-height: 1.28;
+            font-weight: 700;
+        }
+
+        .fstreams-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            min-height: 0;
+            align-items: stretch;
+        }
+
+        .fstream-card {
+            border: 2px dashed #a5b6eb;
+            border-radius: 10px;
+            background: #f8faff;
+            padding: 7px 8px;
+            display: grid;
+            grid-template-rows: auto auto auto auto 1fr auto;
+            align-content: stretch;
+            gap: 5px;
+            min-height: 0;
+            height: 100%;
+        }
+
+        .fstream-card.output {
+            border-color: #f0b49b;
+            background: #fffaf7;
+        }
+
+        .fstream-card-title {
+            margin: 0;
+            color: #2443aa;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(20px, 1.5vw, 25px);
+            line-height: 1.1;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .fstream-card.output .fstream-card-title {
+            color: #e45a1b;
+        }
+
+        .fstream-card-desc {
+            margin: 0;
+            color: #2f4060;
+            font-size: clamp(13px, 0.9vw, 15px);
+            line-height: 1.25;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .fstream-analogy {
+            display: grid;
+            grid-template-columns: 72px 1fr;
+            gap: 6px;
+            align-items: center;
+            border: 2px solid #b8c6ef;
+            border-radius: 9px;
+            background: #ffffff;
+            padding: 5px 6px;
+        }
+
+        .fstream-card.output .fstream-analogy {
+            border-color: #f0b49b;
+        }
+
+        .fstream-icon-wrap {
+            width: 68px;
+            height: 54px;
+            border: 2px solid #b8c6ef;
+            border-radius: 8px;
+            background: #f4f8ff;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+        }
+
+        .fstream-card.output .fstream-icon-wrap {
+            border-color: #f0b49b;
+            background: #fff5ef;
+        }
+
+        .fstream-icon-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+        }
+
+        .fos-icon {
+            font-size: 30px;
+            line-height: 1;
+            color: #d95c16;
+            font-weight: 900;
+        }
+
+        .fstream-analogy-text {
+            margin: 0;
+            color: #2f4060;
+            font-size: clamp(12px, 0.84vw, 14px);
+            line-height: 1.24;
+            font-weight: 700;
+        }
+
+        .fstream-mini-title {
+            margin: 0;
+            color: #2443aa;
+            font-size: clamp(13px, 0.92vw, 15px);
+            line-height: 1.2;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .fstream-card.output .fstream-mini-title {
+            color: #e45a1b;
+        }
+
+        .fstream-list {
+            margin: 0;
+            padding-left: 0;
+            list-style: none;
+            color: #2f4060;
+            font-size: clamp(12px, 0.84vw, 14px);
+            line-height: 1.24;
+            font-weight: 700;
+        }
+
+        .fstream-list li {
+            margin: 2px 0;
+            display: grid;
+            grid-template-columns: 15px 1fr;
+            gap: 5px;
+            align-items: start;
+        }
+
+        .fstream-list li::before {
+            content: "✓";
+            color: #1d8f4f;
+            font-weight: 900;
+            line-height: 1.05;
+        }
+
+        .fstream-code {
+            margin: 0;
+            border: 2px solid #1f304d;
+            border-radius: 8px;
+            background: #0f1f37;
+            color: #dbe8ff;
+            padding: 6px 7px;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: clamp(10px, 0.7vw, 12px);
+            line-height: 1.26;
+            white-space: pre;
+            overflow: auto;
+        }
+
+        .fstream-code .kw {
+            color: #ffd166;
+            font-weight: 800;
+        }
+
+        .fstreams-bottom-note {
+            border: 2px solid #c4ceea;
+            border-radius: 10px;
+            background: #f7faff;
+            padding: 7px 9px;
+            color: #2f4060;
+            font-size: clamp(12px, 0.84vw, 14px);
+            line-height: 1.24;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .fstreams-extra {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+            min-height: 0;
+        }
+
+        .fstreams-extra-card {
+            border: 2px solid #bcc9ec;
+            border-radius: 10px;
+            background: #f7faff;
+            padding: 7px 8px;
+            display: grid;
+            align-content: start;
+            gap: 5px;
+        }
+
+        .fstreams-extra-card.warn {
+            border-color: #efc1aa;
+            background: #fff8f4;
+        }
+
+        .fstreams-extra-card.tip {
+            border-color: #9fc8a9;
+            background: #f5fcf6;
+        }
+
+        .fstreams-extra-card h5 {
+            margin: 0;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(14px, 1.02vw, 18px);
+            line-height: 1.15;
+            font-weight: 800;
+            color: #2443aa;
+        }
+
+        .fstreams-extra-card.warn h5 {
+            color: #d95c16;
+        }
+
+        .fstreams-extra-card.tip h5 {
+            color: #1d7d3f;
+        }
+
+        .fstreams-extra-list {
+            margin: 0;
+            padding-left: 0;
+            list-style: none;
+            color: #2f4060;
+            font-size: clamp(11px, 0.78vw, 13px);
+            line-height: 1.24;
+            font-weight: 700;
+        }
+
+        .fstreams-extra-list li {
+            margin: 2px 0;
+            display: grid;
+            grid-template-columns: 12px 1fr;
+            gap: 5px;
+            align-items: start;
+        }
+
+        .fstreams-extra-list li::before {
+            content: "•";
+            color: #2443aa;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .fstreams-extra-card.warn .fstreams-extra-list li::before {
+            color: #d95c16;
+        }
+
+        .fstreams-mini-code {
+            margin: 0;
+            border: 2px solid #2c6b42;
+            border-radius: 8px;
+            background: #123125;
+            color: #def6e3;
+            padding: 6px 7px;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: clamp(10px, 0.7vw, 12px);
+            line-height: 1.22;
+            white-space: pre;
+            overflow: auto;
+        }
+
+        .fstreams-mini-code .kw {
+            color: #ffd166;
+            font-weight: 800;
+        }
+
+        .bis-slide {
+            display: grid;
+            align-content: start;
+            gap: 10px;
+        }
+
+        .bis-head {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .bis-number {
+            width: 44px;
+            height: 44px;
+            border: 2px solid var(--foreground);
+            border-radius: 999px;
+            background: #d95c16;
+            color: #ffffff;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 22px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .bis-title {
+            margin: 0;
+            color: #d95c16;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(33px, 3vw, 44px);
+            line-height: 1;
+            font-weight: 900;
+        }
+
+        .bis-subtitle {
+            margin: 3px 0 0;
+            color: #2f4060;
+            font-size: clamp(18px, 1.3vw, 22px);
+            font-weight: 800;
+            line-height: 1.35;
+        }
+
+        .bis-box {
+            border: 2px dashed #f0b49b;
+            border-radius: 12px;
+            background: #fffaf7;
+            padding: 10px 12px;
+        }
+
+        .bis-box h4 {
+            margin: 0 0 8px;
+            color: #e45a1b;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(22px, 1.7vw, 28px);
+            font-weight: 800;
+            line-height: 1.1;
+            text-align: center;
+        }
+
+        .bis-analogy-wrap {
+            display: grid;
+            grid-template-columns: 118px 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .bis-icon-wrap {
+            width: 114px;
+            height: 94px;
+            border: 2px solid #f0b49b;
+            border-radius: 10px;
+            background: #ffffff;
+            display: grid;
+            place-items: center;
+            padding: 4px;
+            overflow: hidden;
+        }
+
+        .bis-icon-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+        }
+
+        .bis-text {
+            margin: 0;
+            color: #2f4060;
+            font-size: clamp(16px, 1.1vw, 18px);
+            line-height: 1.4;
+            font-weight: 700;
+        }
+
+        .bis-text strong {
+            color: #e45a1b;
+        }
+
+        .bis-check-list {
+            margin: 0;
+            padding-left: 0;
+            list-style: none;
+            color: #2f4060;
+            font-size: clamp(16px, 1.12vw, 19px);
+            line-height: 1.35;
+            font-weight: 700;
+        }
+
+        .bis-check-list li {
+            margin: 4px 0;
+            display: grid;
+            grid-template-columns: 18px 1fr;
+            gap: 6px;
+            align-items: start;
+        }
+
+        .bis-check-list li::before {
+            content: "✓";
+            color: #1d8f4f;
+            font-weight: 900;
+            line-height: 1.1;
+        }
+
+        .bis-example-title {
+            margin: 0 0 6px;
+            text-align: center;
+            color: #e45a1b;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(23px, 1.75vw, 29px);
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .bis-code {
+            margin: 0;
+            border: 2px solid #1f304d;
+            border-radius: 10px;
+            background: #0f1f37;
+            color: #dbe8ff;
+            padding: 10px 12px;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: clamp(13px, 0.9vw, 15px);
+            line-height: 1.4;
+            white-space: pre;
+            overflow: auto;
+        }
+
+        .bis-code .kw {
+            color: #ffd166;
+            font-weight: 800;
+        }
+
+        .bis-advantages {
+            border: 2px solid #f0b49b;
+            border-radius: 10px;
+            background: #fffaf7;
+            padding: 8px 10px;
+        }
+
+        .bis-advantages h5 {
+            margin: 0 0 6px;
+            color: #e45a1b;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(20px, 1.5vw, 25px);
+            font-weight: 800;
+            line-height: 1.1;
+            text-align: center;
+        }
+
+        .bis-adv-list {
+            margin: 0;
+            padding-left: 0;
+            list-style: none;
+            color: #2f4060;
+            font-size: clamp(15px, 1.05vw, 18px);
+            line-height: 1.32;
+            font-weight: 700;
+        }
+
+        .bis-adv-list li {
+            margin: 3px 0;
+            display: grid;
+            grid-template-columns: 18px 1fr;
+            gap: 6px;
+            align-items: start;
+        }
+
+        .bis-adv-list li::before {
+            content: "✓";
+            color: #e45a1b;
+            font-weight: 900;
+            line-height: 1.1;
+        }
+
+        #s4 .slide-card {
+            overflow: hidden;
+        }
+
+        .bstreams-slide {
+            display: grid;
+            grid-template-rows: auto auto 1fr auto auto;
+            align-content: stretch;
+            gap: 8px;
+            height: 100%;
+        }
+
+        .bstreams-head {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .bstreams-number {
+            width: 42px;
+            height: 42px;
+            border: 2px solid var(--foreground);
+            border-radius: 999px;
+            background: #d95c16;
+            color: #ffffff;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 21px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .bstreams-title {
+            margin: 0;
+            color: #d95c16;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(30px, 2.65vw, 40px);
+            line-height: 1;
+            font-weight: 900;
+            padding-right: 96px;
+        }
+
+        .bstreams-subtitle {
+            margin: 2px 0 0;
+            color: #2f4060;
+            font-size: clamp(15px, 1.04vw, 18px);
+            line-height: 1.3;
+            font-weight: 700;
+        }
+
+        .bstreams-overview {
+            border: 2px solid #f0b49b;
+            border-radius: 10px;
+            background: #fff9f4;
+            padding: 7px 10px;
+            color: #2f4060;
+            font-size: clamp(13px, 0.9vw, 15px);
+            line-height: 1.28;
+            font-weight: 700;
+        }
+
+        .bstreams-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            min-height: 0;
+            align-items: stretch;
+        }
+
+        .bstream-card {
+            border: 2px dashed #f0b49b;
+            border-radius: 10px;
+            background: #fffaf7;
+            padding: 7px 8px;
+            display: grid;
+            grid-template-rows: auto auto auto auto 1fr auto;
+            align-content: stretch;
+            gap: 5px;
+            min-height: 0;
+            height: 100%;
+        }
+
+        .bstream-card.output {
+            border-color: #9db0ea;
+            background: #f9fbff;
+        }
+
+        .bstream-title {
+            margin: 0;
+            color: #e45a1b;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(20px, 1.5vw, 25px);
+            line-height: 1.1;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .bstream-card.output .bstream-title {
+            color: #264bb8;
+        }
+
+        .bstream-desc {
+            margin: 0;
+            color: #2f4060;
+            font-size: clamp(13px, 0.9vw, 15px);
+            line-height: 1.25;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .bstream-analogy {
+            display: grid;
+            grid-template-columns: 72px 1fr;
+            gap: 6px;
+            align-items: center;
+            border: 2px solid #f0b49b;
+            border-radius: 9px;
+            background: #ffffff;
+            padding: 5px 6px;
+        }
+
+        .bstream-card.output .bstream-analogy {
+            border-color: #9db0ea;
+        }
+
+        .bstream-icon-wrap {
+            width: 68px;
+            height: 54px;
+            border: 2px solid #f0b49b;
+            border-radius: 8px;
+            background: #ffffff;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+        }
+
+        .bstream-card.output .bstream-icon-wrap {
+            border-color: #9db0ea;
+            background: #f4f8ff;
+        }
+
+        .bstream-icon-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+        }
+
+        .bos-icon {
+            font-size: 30px;
+            line-height: 1;
+            color: #325bd7;
+            font-weight: 900;
+        }
+
+        .bstream-analogy-text {
+            margin: 0;
+            color: #2f4060;
+            font-size: clamp(12px, 0.84vw, 14px);
+            line-height: 1.24;
+            font-weight: 700;
+        }
+
+        .bstream-mini-title {
+            margin: 0;
+            color: #e45a1b;
+            font-size: clamp(13px, 0.92vw, 15px);
+            line-height: 1.2;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .bstream-card.output .bstream-mini-title {
+            color: #264bb8;
+        }
+
+        .bstream-list {
+            margin: 0;
+            padding-left: 0;
+            list-style: none;
+            color: #2f4060;
+            font-size: clamp(12px, 0.84vw, 14px);
+            line-height: 1.24;
+            font-weight: 700;
+        }
+
+        .bstream-list li {
+            margin: 2px 0;
+            display: grid;
+            grid-template-columns: 15px 1fr;
+            gap: 5px;
+            align-items: start;
+        }
+
+        .bstream-list li::before {
+            content: "✓";
+            color: #1d8f4f;
+            font-weight: 900;
+            line-height: 1.05;
+        }
+
+        .bstream-code {
+            margin: 0;
+            border: 2px solid #1f304d;
+            border-radius: 8px;
+            background: #0f1f37;
+            color: #dbe8ff;
+            padding: 6px 7px;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: clamp(10px, 0.7vw, 12px);
+            line-height: 1.26;
+            white-space: pre;
+            overflow: auto;
+        }
+
+        .bstream-code .kw {
+            color: #ffd166;
+            font-weight: 800;
+        }
+
+        .bstreams-bottom-note {
+            border: 2px solid #c4ceea;
+            border-radius: 10px;
+            background: #f7faff;
+            padding: 7px 9px;
+            color: #2f4060;
+            font-size: clamp(12px, 0.84vw, 14px);
+            line-height: 1.24;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .bstreams-extra {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+            min-height: 0;
+        }
+
+        .bstreams-extra-card {
+            border: 2px solid #d6c9f3;
+            border-radius: 10px;
+            background: #faf7ff;
+            padding: 7px 8px;
+            display: grid;
+            align-content: start;
+            gap: 5px;
+        }
+
+        .bstreams-extra-card.warn {
+            border-color: #f3c8b5;
+            background: #fff8f4;
+        }
+
+        .bstreams-extra-card.good {
+            border-color: #a8d0b7;
+            background: #f5fcf7;
+        }
+
+        .bstreams-extra-card h5 {
+            margin: 0;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(14px, 1.02vw, 18px);
+            line-height: 1.15;
+            font-weight: 800;
+            color: #264bb8;
+        }
+
+        .bstreams-extra-card.warn h5 {
+            color: #d95c16;
+        }
+
+        .bstreams-extra-card.good h5 {
+            color: #1f7b4a;
+        }
+
+        .bstreams-extra-list {
+            margin: 0;
+            padding-left: 0;
+            list-style: none;
+            color: #2f4060;
+            font-size: clamp(11px, 0.78vw, 13px);
+            line-height: 1.24;
+            font-weight: 700;
+        }
+
+        .bstreams-extra-list li {
+            margin: 2px 0;
+            display: grid;
+            grid-template-columns: 12px 1fr;
+            gap: 5px;
+            align-items: start;
+        }
+
+        .bstreams-extra-list li::before {
+            content: "•";
+            color: #264bb8;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .bstreams-extra-card.warn .bstreams-extra-list li::before {
+            color: #d95c16;
+        }
+
+        .bstreams-mini-code {
+            margin: 0;
+            border: 2px solid #2c6b42;
+            border-radius: 8px;
+            background: #123125;
+            color: #def6e3;
+            padding: 6px 7px;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: clamp(10px, 0.7vw, 12px);
+            line-height: 1.22;
+            white-space: pre;
+            overflow: auto;
+        }
+
+        .bstreams-mini-code .kw {
+            color: #ffd166;
+            font-weight: 800;
+        }
+
+        .cmp-slide {
+            display: grid;
+            grid-template-rows: auto 1fr 1fr;
+            align-content: stretch;
+            gap: 10px;
+            height: 100%;
+        }
+
+        .cmp-title {
+            margin: 0;
+            color: #17369a;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(28px, 2.4vw, 38px);
+            line-height: 1.08;
+            font-weight: 900;
+            text-align: center;
+        }
+
+        .cmp-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            min-height: 0;
+            align-items: stretch;
+        }
+
+        .cmp-panel {
+            border: 2px solid #9db0ea;
+            border-radius: 12px;
+            background: #f9fbff;
+            overflow: hidden;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            min-height: 0;
+        }
+
+        .cmp-panel-title {
+            margin: 0;
+            padding: 7px 10px;
+            border-bottom: 2px solid #9db0ea;
+            background: #edf2ff;
+            color: #17369a;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(17px, 1.25vw, 22px);
+            font-weight: 800;
+            line-height: 1.15;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .cmp-panel-body {
+            padding: 8px 10px;
+            min-height: 0;
+        }
+
+        .cmp-flow-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cmp-flow-node {
+            border: 2px solid #b8c6ef;
+            border-radius: 10px;
+            background: #ffffff;
+            padding: 7px 6px;
+            text-align: center;
+            color: #2f4060;
+            font-size: clamp(13px, 0.9vw, 15px);
+            line-height: 1.25;
+            font-weight: 800;
+            min-height: 74px;
+            display: grid;
+            align-content: center;
+        }
+
+        .cmp-flow-node.file {
+            border-color: #9baab8;
+            background: #f5f7fb;
+        }
+
+        .cmp-flow-node.fis {
+            border-color: #8da8ef;
+            background: #f4f8ff;
+        }
+
+        .cmp-flow-node.bis {
+            border-color: #f0b49b;
+            background: #fff9f5;
+        }
+
+        .cmp-flow-node.program {
+            border-color: #c4b8ef;
+            background: #f8f5ff;
+        }
+
+        .cmp-arrow {
+            color: #325bd7;
+            font-size: clamp(20px, 1.5vw, 24px);
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .cmp-note {
+            margin: 6px 0 0;
+            text-align: center;
+            color: #3b5079;
+            font-size: clamp(12px, 0.85vw, 14px);
+            line-height: 1.3;
+            font-weight: 700;
+        }
+
+        .cmp-why-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .cmp-why-card {
+            border: 2px solid #b8c6ef;
+            border-radius: 10px;
+            background: #ffffff;
+            padding: 7px 8px;
+        }
+
+        .cmp-why-card h5 {
+            margin: 0 0 6px;
+            font-size: clamp(13px, 0.95vw, 16px);
+            line-height: 1.2;
+            font-weight: 800;
+            text-align: center;
+            color: #17369a;
+        }
+
+        .cmp-why-card.with h5 {
+            color: #e45a1b;
+        }
+
+        .cmp-mini-list {
+            margin: 0;
+            padding-left: 14px;
+            color: #2f4060;
+            font-size: clamp(12px, 0.85vw, 14px);
+            line-height: 1.28;
+            font-weight: 700;
+        }
+
+        .cmp-mini-list li {
+            margin: 3px 0;
+        }
+
+        .cmp-mini-note {
+            margin: 6px 0 0;
+            text-align: center;
+            font-size: clamp(12px, 0.85vw, 14px);
+            line-height: 1.25;
+            font-weight: 800;
+        }
+
+        .cmp-mini-note.slow {
+            color: #b64524;
+        }
+
+        .cmp-mini-note.fast {
+            color: #1f8a4a;
+        }
+
+        .cmp-table-wrap {
+            border: 2px solid #9db0ea;
+            border-radius: 12px;
+            background: #ffffff;
+            overflow: hidden;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            min-height: 0;
+        }
+
+        .cmp-table-title {
+            margin: 0;
+            padding: 6px 10px;
+            background: #17369a;
+            color: #ffffff;
+            text-align: center;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(17px, 1.2vw, 21px);
+            font-weight: 800;
+            line-height: 1.1;
+            text-transform: uppercase;
+        }
+
+        .cmp-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cmp-table th,
+        .cmp-table td {
+            border: 1px solid #c4ceea;
+            padding: 5px 6px;
+            font-size: clamp(11px, 0.78vw, 13px);
+            line-height: 1.25;
+            color: #2f4060;
+            font-weight: 700;
+            vertical-align: top;
+        }
+
+        .cmp-table th {
+            background: #f0f4ff;
+            color: #17369a;
+            text-align: left;
+            font-weight: 800;
+        }
+
+        .cmp-table th:nth-child(4) {
+            color: #e45a1b;
+        }
+
+        .cmp-code-wrap {
+            border: 2px solid #9db0ea;
+            border-radius: 12px;
+            background: #ffffff;
+            overflow: hidden;
+            display: grid;
+            grid-template-rows: auto auto 1fr auto;
+            min-height: 0;
+        }
+
+        .cmp-code-title {
+            margin: 0;
+            padding: 6px 10px;
+            background: #17369a;
+            color: #ffffff;
+            text-align: center;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(17px, 1.2vw, 21px);
+            font-weight: 800;
+            line-height: 1.1;
+            text-transform: uppercase;
+        }
+
+        .cmp-code-sub {
+            margin: 0;
+            padding: 6px 10px;
+            color: #2f4060;
+            text-align: center;
+            font-size: clamp(12px, 0.85vw, 14px);
+            line-height: 1.25;
+            font-weight: 700;
+        }
+
+        .cmp-code {
+            margin: 0 10px 8px;
+            border: 2px solid #1f304d;
+            border-radius: 10px;
+            background: #0f1f37;
+            color: #dbe8ff;
+            padding: 9px 10px;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: clamp(11px, 0.76vw, 13px);
+            line-height: 1.35;
+            white-space: pre;
+            overflow: auto;
+        }
+
+        .cmp-code .kw {
+            color: #ffd166;
+            font-weight: 800;
+        }
+
+        .cmp-why-buffer {
+            margin: 0 10px 10px;
+            border: 2px solid #c4ceea;
+            border-radius: 10px;
+            background: #f7faff;
+            padding: 7px 8px;
+            color: #2f4060;
+            font-size: clamp(12px, 0.84vw, 14px);
+            line-height: 1.28;
+            font-weight: 700;
+        }
+
+        .cmp-why-buffer strong {
+            color: #17369a;
+        }
+
+        .enc-slide {
+            display: grid;
+            grid-template-rows: auto auto 1fr;
+            align-content: start;
+            gap: 6px;
+            height: 100%;
+        }
+
+        .enc-title {
+            margin: 0;
+            color: #3d2999;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(24px, 2.1vw, 32px);
+            line-height: 1.08;
+            font-weight: 900;
+        }
+
+        .enc-subtitle {
+            margin: 0;
+            border: 2px solid #b9ace5;
+            border-radius: 12px;
+            background: #f4f0ff;
+            color: #3b2f70;
+            padding: 6px 8px;
+            font-size: clamp(11px, 0.82vw, 13px);
+            line-height: 1.25;
+            font-weight: 700;
+        }
+
+        .enc-boxes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            min-height: 0;
+            align-content: stretch;
+        }
+
+        .enc-box {
+            border: 2px solid #c8bdef;
+            border-radius: 12px;
+            background: #ffffff;
+            padding: 6px 7px;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .enc-box h4 {
+            margin: 0 0 4px;
+            color: #3d2999;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(14px, 1vw, 17px);
+            line-height: 1.15;
+            font-weight: 800;
+        }
+
+        .enc-box p {
+            margin: 0;
+            color: #2f4060;
+            font-size: clamp(11px, 0.76vw, 13px);
+            line-height: 1.22;
+            font-weight: 700;
+        }
+
+        .enc-flow {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .enc-byte-grid {
+            border: 2px solid #d8ceef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .enc-byte-row {
+            display: grid;
+            grid-template-columns: minmax(60px, 0.5fr) minmax(0, 0.85fr) minmax(0, 1.15fr);
+        }
+
+        .enc-byte-row + .enc-byte-row {
+            border-top: 1px solid #ddd4f4;
+        }
+
+        .enc-byte-cell {
+            padding: 3px 5px;
+            font-size: clamp(9px, 0.66vw, 11px);
+            line-height: 1.16;
+            font-weight: 700;
+            color: #2f4060;
+            border-right: 1px solid #ddd4f4;
+        }
+
+        .enc-byte-cell:last-child {
+            border-right: 0;
+        }
+
+        .enc-byte-cell.head {
+            background: #f6f3ff;
+            color: #3d2999;
+            font-weight: 800;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        }
+
+        .enc-flow-node {
+            border: 2px solid #d8ceef;
+            border-radius: 10px;
+            background: #f9f7ff;
+            padding: 5px 4px;
+            text-align: center;
+            color: #3a2f68;
+            font-size: clamp(10px, 0.72vw, 12px);
+            line-height: 1.2;
+            font-weight: 800;
+        }
+
+        .enc-flow-arrow {
+            color: #5c42bf;
+            font-size: clamp(15px, 1.1vw, 18px);
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .enc-encoding-grid {
+            border: 2px solid #d8ceef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .enc-encoding-notes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+
+        .enc-note-card {
+            border: 2px solid #d8ceef;
+            border-radius: 9px;
+            background: #f9f7ff;
+            padding: 4px 5px;
+            color: #3b2f70;
+            font-size: clamp(9px, 0.66vw, 11px);
+            line-height: 1.16;
+            font-weight: 700;
+        }
+
+        .enc-encoding-row {
+            display: grid;
+            grid-template-columns: minmax(95px, 0.72fr) minmax(0, 1.28fr);
+        }
+
+        .enc-encoding-row + .enc-encoding-row {
+            border-top: 1px solid #ddd4f4;
+        }
+
+        .enc-encoding-name,
+        .enc-encoding-desc {
+            padding: 4px 6px;
+            font-size: clamp(10px, 0.72vw, 12px);
+            line-height: 1.2;
+            font-weight: 700;
+            color: #2f4060;
+        }
+
+        .enc-encoding-name {
+            background: #f6f3ff;
+            color: #3d2999;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-weight: 800;
+        }
+
+        .enc-two-cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .enc-practice-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+
+        .enc-practice-item {
+            border: 2px solid #d4d9ef;
+            border-radius: 9px;
+            background: #f8faff;
+            padding: 4px 5px;
+            color: #2f4060;
+            font-size: clamp(9px, 0.66vw, 11px);
+            line-height: 1.16;
+            font-weight: 700;
+        }
+
+        .enc-practice-item strong {
+            color: #2e3f82;
+        }
+
+        .enc-code-card {
+            border: 2px solid #d5cdf0;
+            border-radius: 10px;
+            background: #ffffff;
+            padding: 5px;
+        }
+
+        .enc-code-card h5 {
+            margin: 0 0 4px;
+            font-size: clamp(11px, 0.8vw, 13px);
+            line-height: 1.2;
+            font-weight: 800;
+        }
+
+        .enc-code-card.wrong {
+            border-color: #efc2c7;
+            background: #fff7f8;
+        }
+
+        .enc-code-card.wrong h5 {
+            color: #b33a4a;
+        }
+
+        .enc-code-card.correct {
+            border-color: #c3e3ce;
+            background: #f7fff9;
+        }
+
+        .enc-code-card.correct h5 {
+            color: #217d47;
+        }
+
+        .enc-code {
+            margin: 0;
+            border: 2px solid #1f304d;
+            border-radius: 8px;
+            background: #0f1f37;
+            color: #dbe8ff;
+            padding: 4px 5px;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: clamp(9px, 0.62vw, 10.5px);
+            line-height: 1.2;
+            white-space: pre-wrap;
+            overflow: hidden;
+        }
+
+        .enc-code .kw {
+            color: #ffd166;
+            font-weight: 800;
+        }
+
+        .enc-bullets {
+            margin: 4px 0 0;
+            padding-left: 14px;
+            color: #2f4060;
+            font-size: clamp(10px, 0.72vw, 12px);
+            line-height: 1.2;
+            font-weight: 700;
+        }
+
+        .enc-bullets li {
+            margin: 2px 0;
+        }
+
+        .enc-rule {
+            border: 2px solid #6f58c3;
+            border-radius: 10px;
+            background: #f2ecff;
+            padding: 5px 7px;
+            color: #352a66;
+            font-size: clamp(11px, 0.8vw, 13px);
+            line-height: 1.2;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .enc-rule strong {
+            color: #2f1f82;
+        }
+
+        .enc-bug {
+            border: 2px solid #f0b1c9;
+            border-radius: 10px;
+            background: #fff7fb;
+            padding: 5px 7px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) minmax(0, 1fr);
+            gap: 5px;
+            align-items: center;
+        }
+
+        .enc-failure-chain {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr auto 1fr;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .enc-failure-step {
+            border: 2px solid #d4d9ef;
+            border-radius: 8px;
+            background: #f8faff;
+            padding: 3px 4px;
+            color: #2f4060;
+            font-size: clamp(8px, 0.58vw, 10px);
+            line-height: 1.13;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .enc-failure-arrow {
+            color: #5c42bf;
+            font-size: clamp(11px, 0.82vw, 14px);
+            font-weight: 900;
+            text-align: center;
+        }
+
+        .enc-bug-tag {
+            grid-column: 1 / -1;
+            justify-self: center;
+            border: 2px solid #d84a78;
+            border-radius: 999px;
+            padding: 2px 8px;
+            background: #ffecf4;
+            color: #b92d5d;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .enc-bug-item {
+            color: #2f4060;
+            font-size: clamp(10px, 0.72vw, 12px);
+            line-height: 1.18;
+            font-weight: 700;
+            text-align: center;
+            border: 2px solid #f3d2df;
+            border-radius: 8px;
+            background: #ffffff;
+            padding: 4px 5px;
+        }
+
+        .enc-bug-item strong {
+            color: #3d2999;
+        }
+
+        .enc-bug-arrow {
+            color: #3d2999;
+            font-size: clamp(14px, 1vw, 17px);
+            font-weight: 900;
+        }
+
+        .enc-mini-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 5px;
+        }
+
+        .enc-metric {
+            border: 2px solid #d8ceef;
+            border-radius: 8px;
+            background: #f7f4ff;
+            padding: 4px 5px;
+            color: #3b2f70;
+            font-size: clamp(8px, 0.56vw, 10px);
+            line-height: 1.16;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .enc-impact-list {
+            margin: 0;
+            padding-left: 14px;
+            color: #2f4060;
+            font-size: clamp(9px, 0.64vw, 11px);
+            line-height: 1.18;
+            font-weight: 700;
+        }
+
+        .enc-impact-list li {
+            margin: 2px 0;
+        }
+
+        .enc-impact-list strong {
+            color: #2f1f82;
+        }
+
+        .enc-decision-grid {
+            border: 2px solid #d8ceef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .enc-decision-row {
+            display: grid;
+            grid-template-columns: minmax(100px, 0.75fr) minmax(0, 1.25fr);
+        }
+
+        .enc-decision-row + .enc-decision-row {
+            border-top: 1px solid #ddd4f4;
+        }
+
+        .enc-decision-cell {
+            padding: 3px 5px;
+            font-size: clamp(8px, 0.58vw, 10.5px);
+            line-height: 1.16;
+            font-weight: 700;
+            color: #2f4060;
+            border-right: 1px solid #ddd4f4;
+        }
+
+        .enc-decision-cell:last-child {
+            border-right: 0;
+        }
+
+        .enc-decision-cell.head {
+            background: #f6f3ff;
+            color: #3d2999;
+            font-weight: 800;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        }
+
+        .enc-debug-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+
+        .enc-debug-item {
+            border: 2px solid #d4d9ef;
+            border-radius: 8px;
+            background: #f8faff;
+            padding: 4px 5px;
+            color: #2f4060;
+            font-size: clamp(8px, 0.58vw, 10px);
+            line-height: 1.16;
+            font-weight: 700;
+        }
+
+        .enc-debug-item strong {
+            color: #2f1f82;
+        }
+
+        #s6 .slide-card {
+            overflow: hidden;
+        }
+
+        .cs7-slide {
+            display: grid;
+            grid-template-rows: auto auto minmax(0, 1fr) auto;
+            align-content: start;
+            gap: 6px;
+            height: 100%;
+        }
+
+        .cs7-title {
+            margin: 0;
+            color: #23477c;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(23px, 2vw, 30px);
+            line-height: 1.08;
+            font-weight: 900;
+        }
+
+        .cs7-subtitle {
+            margin: 0;
+            border: 2px solid #b7cbe9;
+            border-radius: 10px;
+            background: #f3f8ff;
+            color: #294b7b;
+            padding: 5px 8px;
+            font-size: clamp(10px, 0.74vw, 12px);
+            line-height: 1.22;
+            font-weight: 700;
+        }
+
+        .cs7-main {
+            display: grid;
+            grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+            gap: 6px;
+            min-height: 0;
+        }
+
+        .cs7-card {
+            border: 2px solid #c8d9f0;
+            border-radius: 10px;
+            background: #ffffff;
+            padding: 6px 7px;
+            min-height: 0;
+        }
+
+        .cs7-card h4 {
+            margin: 0 0 4px;
+            color: #1f4b8f;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(14px, 1vw, 17px);
+            line-height: 1.12;
+            font-weight: 800;
+        }
+
+        .cs7-muted {
+            margin: 0;
+            color: #3e5d86;
+            font-size: clamp(10px, 0.72vw, 12px);
+            line-height: 1.2;
+            font-weight: 700;
+        }
+
+        .cs7-class-block {
+            margin-top: 5px;
+            border: 2px solid #cdddf2;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .cs7-class-head {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 2px solid #7cb27d;
+            border-bottom: 2px solid #7cb27d;
+            border-radius: 0 0 8px 0;
+            background: #2d8a57;
+            color: #ffffff;
+            padding: 2px 8px;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+        }
+
+        .cs7-class-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cs7-class-table td {
+            border-top: 1px solid #d9e5f6;
+            border-right: 1px solid #d9e5f6;
+            padding: 4px 6px;
+            font-size: clamp(10px, 0.72vw, 12px);
+            line-height: 1.2;
+            font-weight: 700;
+            color: #2e4a73;
+        }
+
+        .cs7-class-table td:last-child {
+            border-right: 0;
+        }
+
+        .cs7-class-table .name {
+            width: 40%;
+            color: #1f8b55;
+            background: #f4fbf5;
+            font-weight: 800;
+        }
+
+        .cs7-example {
+            margin-top: 5px;
+            border: 2px solid #cdddf2;
+            border-radius: 10px;
+            background: #f9fbff;
+            padding: 5px 6px;
+        }
+
+        .cs7-example h5 {
+            margin: 0 0 4px;
+            color: #2b578f;
+            font-size: clamp(11px, 0.78vw, 13px);
+            line-height: 1.15;
+            font-weight: 800;
+        }
+
+        .cs7-code {
+            margin: 0;
+            border: 2px solid #1f304d;
+            border-radius: 8px;
+            background: #0f1f37;
+            color: #dbe8ff;
+            padding: 4px 5px;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: clamp(8px, 0.56vw, 10px);
+            line-height: 1.15;
+            white-space: pre-wrap;
+            overflow: hidden;
+        }
+
+        .cs7-code .kw {
+            color: #ffd166;
+            font-weight: 800;
+        }
+
+        .cs7-uses-card {
+            display: grid;
+            align-content: start;
+            gap: 5px;
+        }
+
+        .cs7-use-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 4px;
+        }
+
+        .cs7-use-list li {
+            border: 2px solid #d9e5f6;
+            border-radius: 8px;
+            background: #f8fbff;
+            padding: 5px 6px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 5px;
+            align-items: center;
+            color: #2f4f7b;
+            font-size: clamp(10px, 0.72vw, 12px);
+            line-height: 1.16;
+            font-weight: 700;
+        }
+
+        .cs7-chip {
+            border-radius: 999px;
+            padding: 2px 6px;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
+        }
+
+        .cs7-chip.byte {
+            border: 2px solid #c6826a;
+            background: #fff3ee;
+            color: #9f3d20;
+        }
+
+        .cs7-chip.char {
+            border: 2px solid #64a57f;
+            background: #f1fbf4;
+            color: #1f7b4a;
+        }
+
+        .cs7-compare-card {
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+        .cs7-compare-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cs7-compare-table th,
+        .cs7-compare-table td {
+            border: 1px solid #d5e2f4;
+            padding: 4px 5px;
+            font-size: clamp(9px, 0.66vw, 11px);
+            line-height: 1.15;
+            color: #2f4f7b;
+            font-weight: 700;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .cs7-compare-table th {
+            background: #eff5ff;
+            color: #1f4b8f;
+            font-weight: 800;
+        }
+
+        .cs7-yes {
+            color: #1f7b4a;
+            font-weight: 800;
+        }
+
+        .cs7-no {
+            color: #b64524;
+            font-weight: 800;
+        }
+
+        #s7 .slide-card {
+            overflow: hidden;
+        }
+
+        .nio8-slide {
+            display: grid;
+            grid-template-rows: auto auto minmax(0, 1fr) auto;
+            align-content: start;
+            gap: 6px;
+            height: 100%;
+        }
+
+        .nio8-title {
+            margin: 0;
+            color: #1f7a45;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(23px, 2vw, 30px);
+            line-height: 1.08;
+            font-weight: 900;
+        }
+
+        .nio8-subtitle {
+            margin: 0;
+            border: 2px solid #b9ddc8;
+            border-radius: 10px;
+            background: #f2fbf5;
+            color: #25653f;
+            padding: 5px 8px;
+            font-size: clamp(10px, 0.72vw, 12px);
+            line-height: 1.2;
+            font-weight: 700;
+        }
+
+        .nio8-main {
+            display: grid;
+            grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+            gap: 6px;
+            min-height: 0;
+        }
+
+        .nio8-card {
+            border: 2px solid #c9e2d4;
+            border-radius: 10px;
+            background: #ffffff;
+            padding: 6px 7px;
+            min-height: 0;
+        }
+
+        .nio8-card h4 {
+            margin: 0 0 4px;
+            color: #1f7a45;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(14px, 1vw, 17px);
+            line-height: 1.12;
+            font-weight: 800;
+        }
+
+        .nio8-codebox {
+            border: 2px solid #d4e7dc;
+            border-radius: 8px;
+            background: #f9fdfa;
+            padding: 4px 5px;
+        }
+
+        .nio8-codebox + .nio8-codebox {
+            margin-top: 5px;
+        }
+
+        .nio8-codebox h5 {
+            margin: 0 0 3px;
+            color: #2b7f4b;
+            font-size: clamp(10px, 0.7vw, 12px);
+            line-height: 1.1;
+            font-weight: 800;
+        }
+
+        .nio8-code {
+            margin: 0;
+            border: 2px solid #1f304d;
+            border-radius: 7px;
+            background: #0f1f37;
+            color: #dbe8ff;
+            padding: 4px 5px;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: clamp(8px, 0.55vw, 10px);
+            line-height: 1.13;
+            white-space: pre-wrap;
+            overflow: hidden;
+        }
+
+        .nio8-flow {
+            margin-top: 5px;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr auto 1fr;
+            gap: 3px;
+            align-items: center;
+        }
+
+        .nio8-node {
+            border: 2px solid #cce2d2;
+            border-radius: 8px;
+            background: #f7fcf9;
+            color: #2c6f47;
+            font-size: clamp(10px, 0.7vw, 12px);
+            line-height: 1.12;
+            font-weight: 800;
+            text-align: center;
+            padding: 4px 3px;
+        }
+
+        .nio8-arrow {
+            color: #2b8a53;
+            font-size: clamp(12px, 0.9vw, 15px);
+            font-weight: 900;
+            text-align: center;
+        }
+
+        .nio8-op-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 4px;
+        }
+
+        .nio8-op-list li {
+            border: 2px solid #d9eadf;
+            border-radius: 8px;
+            background: #f8fcfa;
+            padding: 4px 5px;
+            display: grid;
+            grid-template-columns: minmax(110px, 0.8fr) minmax(0, 1.2fr);
+            gap: 6px;
+            align-items: start;
+        }
+
+        .nio8-op-name {
+            color: #1f7a45;
+            font-size: clamp(10px, 0.72vw, 12px);
+            line-height: 1.15;
+            font-weight: 800;
+        }
+
+        .nio8-op-code {
+            color: #2f4f7b;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: clamp(8px, 0.58vw, 10px);
+            line-height: 1.15;
+            font-weight: 700;
+            word-break: break-word;
+        }
+
+        .nio8-real {
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+        .nio8-real-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 5px;
+        }
+
+        .nio8-real-item {
+            border: 2px solid #d9eadf;
+            border-radius: 8px;
+            background: #f8fcfa;
+            padding: 5px 4px;
+            text-align: center;
+        }
+
+        .nio8-real-item strong {
+            display: block;
+            color: #25653f;
+            font-size: clamp(10px, 0.7vw, 12px);
+            line-height: 1.12;
+            font-weight: 800;
+        }
+
+        .nio8-real-item span {
+            display: block;
+            margin-top: 2px;
+            color: #3b5f83;
+            font-size: clamp(9px, 0.62vw, 10px);
+            line-height: 1.1;
+            font-weight: 700;
+        }
+
+        #s8 .slide-card {
+            overflow: hidden;
+        }
+
+        .safe9-slide {
+            display: grid;
+            grid-template-rows: auto auto minmax(0, 1fr) auto;
+            align-content: start;
+            gap: 6px;
+            height: 100%;
+        }
+
+        .safe9-title {
+            margin: 0;
+            color: #146786;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(23px, 2vw, 30px);
+            line-height: 1.08;
+            font-weight: 900;
+        }
+
+        .safe9-subtitle {
+            margin: 0;
+            border: 2px solid #b9d9e6;
+            border-radius: 10px;
+            background: #f2fafc;
+            color: #1f5f75;
+            padding: 5px 8px;
+            font-size: clamp(10px, 0.72vw, 12px);
+            line-height: 1.2;
+            font-weight: 700;
+        }
+
+        .safe9-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.38fr) minmax(250px, 0.62fr);
+            gap: 8px;
+            min-height: 0;
+        }
+
+        .safe9-risks {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            min-height: 0;
+        }
+
+        .safe9-side {
+            display: grid;
+            align-content: start;
+            gap: 8px;
+            min-height: 0;
+        }
+
+        .safe9-card {
+            border: 2px solid #c9e1ea;
+            border-radius: 10px;
+            background: #ffffff;
+            padding: 7px 8px;
+            min-height: 0;
+            display: grid;
+            align-content: start;
+            gap: 5px;
+        }
+
+        .safe9-card h4 {
+            margin: 0;
+            color: #196883;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(13px, 0.95vw, 16px);
+            line-height: 1.14;
+            font-weight: 800;
+        }
+
+        .safe9-mini {
+            margin: 0;
+            color: #2f4f7b;
+            font-size: clamp(10px, 0.72vw, 12px);
+            line-height: 1.22;
+            font-weight: 700;
+        }
+
+        .safe9-box {
+            border: 2px solid #d8e7ee;
+            border-radius: 8px;
+            background: #f9fcfd;
+            padding: 5px 6px;
+        }
+
+        .safe9-box.bad {
+            border-color: #f1c9cf;
+            background: #fff7f8;
+        }
+
+        .safe9-box.good {
+            border-color: #c5e6d1;
+            background: #f5fff8;
+        }
+
+        .safe9-label {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            padding: 1px 7px;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+            margin-bottom: 4px;
+        }
+
+        .safe9-label.bad {
+            border: 2px solid #d66376;
+            background: #ffeef1;
+            color: #b53a4f;
+        }
+
+        .safe9-label.good {
+            border: 2px solid #50a970;
+            background: #ecfbf2;
+            color: #2a7f4a;
+        }
+
+        .safe9-code {
+            margin: 0;
+            border: 2px solid #1f304d;
+            border-radius: 7px;
+            background: #0f1f37;
+            color: #dbe8ff;
+            padding: 5px 6px;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: clamp(8.5px, 0.62vw, 10.5px);
+            line-height: 1.2;
+            white-space: pre-wrap;
+            overflow: hidden;
+        }
+
+        .safe9-code .kw {
+            color: #ffd166;
+            font-weight: 800;
+        }
+
+        .safe9-list {
+            margin: 0;
+            padding-left: 15px;
+            color: #2f4f7b;
+            font-size: clamp(10px, 0.72vw, 12px);
+            line-height: 1.2;
+            font-weight: 700;
+        }
+
+        .safe9-list li {
+            margin: 3px 0;
+        }
+
+        .safe9-list.check {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .safe9-list.check li {
+            display: grid;
+            grid-template-columns: 12px 1fr;
+            gap: 4px;
+            align-items: start;
+        }
+
+        .safe9-list.check li::before {
+            content: "✓";
+            color: #28864f;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .safe9-class-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .safe9-class-table td {
+            border: 1px solid #d6e5ec;
+            padding: 4px 5px;
+            font-size: clamp(9px, 0.64vw, 11px);
+            line-height: 1.18;
+            font-weight: 700;
+            color: #2f4f7b;
+            vertical-align: top;
+        }
+
+        .safe9-class-table td:first-child {
+            color: #196883;
+            font-weight: 800;
+            background: #f3f9fc;
+            width: 49%;
+        }
+
+        .safe9-bottom {
+            border: 2px solid #c9e1ea;
+            border-radius: 10px;
+            background: #f4fafc;
+            padding: 6px 8px;
+            color: #255b72;
+            font-size: clamp(11px, 0.78vw, 13px);
+            line-height: 1.2;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        #s9 .slide-card {
+            overflow: hidden;
+        }
+
+        @media (max-width: 1050px) {
+            .file-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .file-column-left {
+                grid-template-rows: auto;
+            }
+
+            .analogy-wrap {
+                grid-template-columns: 78px 1fr;
+            }
+
+            .map-visual {
+                width: 78px;
+                height: 78px;
+            }
+
+            .fis-analogy-wrap {
+                grid-template-columns: 96px 1fr;
+            }
+
+            .fis-icon-wrap {
+                width: 92px;
+                height: 92px;
+            }
+
+            .fstreams-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .fstreams-extra {
+                grid-template-columns: 1fr;
+            }
+
+            .fstream-analogy {
+                grid-template-columns: 66px 1fr;
+            }
+
+            .fstream-icon-wrap {
+                width: 62px;
+                height: 50px;
+            }
+
+            .bis-analogy-wrap {
+                grid-template-columns: 98px 1fr;
+            }
+
+            .bis-icon-wrap {
+                width: 94px;
+                height: 82px;
+            }
+
+            .bstreams-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bstreams-extra {
+                grid-template-columns: 1fr;
+            }
+
+            .bstream-analogy {
+                grid-template-columns: 66px 1fr;
+            }
+
+            .bstream-icon-wrap {
+                width: 62px;
+                height: 50px;
+            }
+
+            .cmp-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cmp-flow-row {
+                grid-template-columns: 1fr;
+                gap: 4px;
+            }
+
+            .cmp-arrow {
+                transform: rotate(90deg);
+                text-align: center;
+            }
+
+            .cmp-why-grid {
+                grid-template-columns: 1fr;
+            }
+
+            #s6 .enc-boxes {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            #s7 .cs7-main {
+                grid-template-columns: 1.15fr 0.85fr;
+            }
+
+            #s8 .nio8-main {
+                grid-template-columns: 0.8fr 1.2fr;
+            }
+
+            #s9 .safe9-layout {
+                grid-template-columns: minmax(0, 1.3fr) minmax(220px, 0.7fr);
+            }
+
+            #s9 .safe9-risks {
+                gap: 6px;
+            }
+        }
+
+        .slide-card.compact-1 {
+            padding-top: clamp(10px, 1.2vw, 16px);
+            padding-bottom: clamp(14px, 1.8vw, 20px);
+        }
+
+        .slide-card.compact-1 h3 {
+            font-size: clamp(24px, 2.6vw, 36px);
+        }
+
+        .slide-card.compact-1 p,
+        .slide-card.compact-1 li {
+            line-height: 1.35;
+        }
+
+        .slide-card.compact-2 {
+            padding-top: 10px;
+            padding-bottom: 14px;
+        }
+
+        .slide-card.compact-2 h3 {
+            font-size: clamp(22px, 2.3vw, 32px);
+        }
+
+        .slide-card.compact-2 p,
+        .slide-card.compact-2 li {
+            line-height: 1.28;
+        }
+
+        .slide-card.compact-3 {
+            padding-top: 8px;
+            padding-bottom: 12px;
+        }
+
+        .slide-card.compact-3 h3 {
+            font-size: clamp(20px, 2.1vw, 30px);
+        }
+
+        .slide-card.compact-3 p,
+        .slide-card.compact-3 li {
+            line-height: 1.24;
+        }
+
+        .deck-controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 8px;
+            align-items: center;
+            padding: 6px 10px;
+            border-top: 2px solid var(--foreground);
+            background: rgba(255, 253, 245, 0.95);
+            backdrop-filter: blur(6px);
+        }
+
+        .nav-btn {
+            border: 2px solid var(--foreground);
+            background: #ffffff;
+            color: var(--foreground);
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            min-width: 88px;
+            box-shadow: 4px 4px 0 0 var(--foreground);
+            transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--secondary);
+            transform: translate(-1px, -1px);
+            box-shadow: 6px 6px 0 0 var(--foreground);
+        }
+
+        .nav-btn:active {
+            transform: translate(1px, 1px);
+            box-shadow: 2px 2px 0 0 var(--foreground);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .progress-area {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 8px;
+            align-items: center;
+            min-width: 0;
+            padding: 4px 8px;
+            border: 2px solid var(--foreground);
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .counter {
+            font-size: 12px;
+            color: #273549;
+            font-weight: 700;
+            text-align: left;
+            white-space: nowrap;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        }
+
+        #slideRange {
+            width: 100%;
+            accent-color: #7a63f6;
+            cursor: pointer;
+            margin: 0;
+            height: 18px;
+        }
+
+        .fullscreen-btn {
+            position: fixed;
+            top: 10px;
+            right: 12px;
+            z-index: 30;
+            width: 42px;
+            height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--foreground);
+            border-radius: 10px;
+            background: #fff;
+            color: var(--foreground);
+            cursor: pointer;
+            box-shadow: 3px 3px 0 0 var(--foreground);
+            transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+        }
+
+        .home-btn,
+        .home-btn:visited {
+            position: fixed;
+            top: 10px;
+            left: 12px;
+            z-index: 30;
+            min-height: 42px;
+            padding: 0 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--foreground);
+            border-radius: 10px;
+            background: #fff;
+            color: var(--foreground);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 800;
+            box-shadow: 3px 3px 0 0 var(--foreground);
+            transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+        }
+
+        .home-btn:hover {
+            background: var(--secondary);
+            transform: translate(-1px, -1px);
+            box-shadow: 5px 5px 0 0 var(--foreground);
+        }
+
+        .home-btn:active {
+            transform: translate(1px, 1px);
+            box-shadow: 2px 2px 0 0 var(--foreground);
+        }
+
+        .fullscreen-btn:hover {
+            background: var(--secondary);
+            transform: translate(-1px, -1px);
+            box-shadow: 5px 5px 0 0 var(--foreground);
+        }
+
+        .fullscreen-btn:active {
+            transform: translate(1px, 1px);
+            box-shadow: 2px 2px 0 0 var(--foreground);
+        }
+
+        .fullscreen-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            stroke-width: 2.3;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        body.is-fullscreen .fullscreen-icon-enter {
+            display: none;
+        }
+
+        body:not(.is-fullscreen) .fullscreen-icon-exit {
+            display: none;
+        }
+
+        @media (max-width: 900px) {
+            .slide {
+                padding: 12px 10px 92px;
+            }
+
+            .slide-card {
+                border-radius: 18px;
+                box-shadow: 6px 6px 0 0 var(--foreground);
+            }
+
+            .slide h3 {
+                font-size: clamp(26px, 5.2vw, 40px);
+                padding-right: 72px;
+            }
+
+            .deck-controls {
+                grid-template-columns: 1fr;
+                padding: 8px;
+                gap: 6px;
+            }
+
+            .progress-area {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .counter {
+                text-align: center;
+            }
+
+            .nav-btn {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .home-btn,
+            .fullscreen-btn {
+                top: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+<main class="container">
+    <header>
+        <h1>Section 27: Java I/O and NIO.2</h1>
+    </header>
+
+    <nav>
+        <ol>
+            <li><a href="#s1">Slide 1 - Lesson 19: Java I/O and NIO.2</a></li>
+            <li><a href="#s2">Slide 2 - java.io.File Class Basics</a></li>
+            <li><a href="#s3">Slide 3 - File Streams (Input and Output)</a></li>
+            <li><a href="#s4">Slide 4 - Buffered Streams (Input and Output)</a></li>
+            <li><a href="#s5">Slide 5 - Data Flow and Buffering Comparison</a></li>
+            <li><a href="#s6">Slide 6 - Encoding and Charset Fundamentals</a></li>
+            <li><a href="#s7">Slide 7 - Character Streams and Real Use Cases</a></li>
+            <li><a href="#s8">Slide 8 - NIO.2 Path and Files Operations</a></li>
+            <li><a href="#s9">Slide 9 - Safe File Handling in Backend Utilities</a></li>
+        </ol>
+    </nav>
+
+    <section class="slide" id="s1">
+        <div class="slide-card intro-card">
+            <span class="badge">Slide 1</span>
+            <p class="lesson-tag">Section 27</p>
+            <h3>Lesson 19 - Java I/O and NIO.2</h3>
+            <div class="io-hero">
+                <div>
+                    <div class="io-definition">
+                        <h4>What Is I/O?</h4>
+                        <p><strong>I/O means Input / Output.</strong> Reading data from a source or writing data to a destination.</p>
+                    </div>
+                    <div class="io-family-box">
+                        <p><strong>Java has two main I/O families:</strong></p>
+                        <ul>
+                            <li>classic stream APIs (<code>java.io</code>)</li>
+                            <li>NIO.2 file APIs (<code>java.nio.file</code>) for modern filesystem work</li>
+                        </ul>
+                        <p>Both are used in real systems. NIO.2 is usually preferred for file path and file operation logic.</p>
+                    </div>
+                    <ul class="io-focus">
+                        <li><strong>Input:</strong> file, network, console, memory</li>
+                        <li><strong>Output:</strong> file, API response, logs, stream sink</li>
+                        <li>Lesson focus: correctness, performance, and safety</li>
+                    </ul>
+                    <div class="io-lesson-map" aria-label="Lesson map">
+                        <div class="io-map-item">File and Path Basics</div>
+                        <div class="io-map-item">Byte and Character Streams</div>
+                        <div class="io-map-item">Buffering and Charset Rules</div>
+                        <div class="io-map-item">NIO.2 and Security Patterns</div>
+                    </div>
+                </div>
+                <div class="io-visual">
+                    <div class="io-cards">
+                        <div class="io-card input">
+                            <div class="io-icon">&darr;</div>
+                            <div class="io-label">INPUT</div>
+                            <p class="io-small">Source -> App</p>
+                        </div>
+                        <div class="io-card output">
+                            <div class="io-icon">&uarr;</div>
+                            <div class="io-label">OUTPUT</div>
+                            <p class="io-small">App -> Destination</p>
+                        </div>
+                    </div>
+                    <p class="io-flow">Files | Network | Memory | Console</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" id="s2">
+        <div class="slide-card file-slide">
+            <span class="badge">Slide 2</span>
+            <div class="file-head">
+                <span class="file-number">1</span>
+                <div>
+                    <h3 class="file-title">File</h3>
+                </div>
+            </div>
+            <p class="file-top-desc">Represents a file or directory on the file system.</p>
+
+            <div class="file-master-box">
+                <p class="file-master-lead"><strong>Core idea:</strong> <code>java.io.File</code> helps you describe and inspect file-system paths. It does not perform content I/O by itself.</p>
+
+                <div class="file-grid">
+                    <div class="file-column file-column-left">
+                        <div class="file-box">
+                            <h4>Real life analogy</h4>
+                            <div class="analogy-wrap">
+                                <div class="map-visual" aria-hidden="true">
+                                    <span class="map-pin"></span>
+                                </div>
+                                <p class="analogy-text">File is like an address on a map. It tells you where the file is, but not the content inside the file.</p>
+                            </div>
+                        </div>
+
+                        <div class="file-box">
+                            <h4>What can it do?</h4>
+                            <ul class="check-list">
+                                <li>Represents a file or directory path</li>
+                                <li>Provides information about the file</li>
+                                <li>Helps create, delete, rename files/folders</li>
+                                <li>Does NOT read or write data</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="file-column file-column-right">
+                        <div class="file-box file-box-solid">
+                            <h4 class="methods-title">Common Methods</h4>
+                            <table class="methods-table" aria-label="Common methods of java.io.File">
+                                <tbody>
+                                <tr>
+                                    <td>exists()</td>
+                                    <td>Checks if file exists</td>
+                                </tr>
+                                <tr>
+                                    <td>isFile()</td>
+                                    <td>Checks if it is a file</td>
+                                </tr>
+                                <tr>
+                                    <td>isDirectory()</td>
+                                    <td>Checks if it is a directory</td>
+                                </tr>
+                                <tr>
+                                    <td>length()</td>
+                                    <td>Returns file size in bytes</td>
+                                </tr>
+                                <tr>
+                                    <td>getName()</td>
+                                    <td>Returns file name</td>
+                                </tr>
+                                <tr>
+                                    <td>getAbsolutePath()</td>
+                                    <td>Returns full path</td>
+                                </tr>
+                                <tr>
+                                    <td>createNewFile()</td>
+                                    <td>Creates a new file</td>
+                                </tr>
+                                <tr>
+                                    <td>mkdir() / mkdirs()</td>
+                                    <td>Creates a directory</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="file-box file-box-solid file-example-row">
+                    <h4 class="example-label">Example</h4>
+                    <pre class="example-code"><span class="kw">File</span> file = <span class="kw">new</span> File("data.txt");
+System.out.println(file.exists());
+System.out.println(file.getName());
+System.out.println(file.getAbsolutePath());
+System.out.println(file.length());</pre>
+
+                    <div class="note-box">File only represents the file. It does NOT read or write any data.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" id="s3">
+        <div class="slide-card fstreams-slide">
+            <span class="badge">Slide 3</span>
+            <div class="fstreams-head">
+                <span class="fstreams-number">2</span>
+                <div>
+                    <h3 class="fstreams-title">File Streams (Unbuffered)</h3>
+                    <p class="fstreams-subtitle">FileInputStream and FileOutputStream are low-level byte streams for direct file read/write operations.</p>
+                </div>
+            </div>
+
+            <div class="fstreams-overview">
+                <strong>Main idea:</strong> These streams work directly with bytes and usually hit the disk on frequent calls. Good for binary data, but slower when heavily repeated without buffering.
+            </div>
+
+            <div class="fstreams-grid">
+                <article class="fstream-card">
+                    <h4 class="fstream-card-title">FileInputStream</h4>
+                    <p class="fstream-card-desc">Reads bytes from file to program.</p>
+                    <div class="fstream-analogy">
+                        <div class="fstream-icon-wrap" aria-hidden="true">
+                            <img class="fstream-icon-img" src="images/fileinputstream-icon.png" alt="">
+                        </div>
+                        <p class="fstream-analogy-text">Data flows from the source file into your app one read at a time.</p>
+                    </div>
+                    <p class="fstream-mini-title">Key Features</p>
+                    <ul class="fstream-list">
+                        <li>Byte-based read stream</li>
+                        <li>Unbuffered direct reads</li>
+                        <li>Use for binary input</li>
+                    </ul>
+                    <pre class="fstream-code"><span class="kw">File</span> inFile = <span class="kw">new</span> File("in.bin");
+<span class="kw">try</span> (FileInputStream fis = <span class="kw">new</span> FileInputStream(inFile)) {
+    <span class="kw">byte</span>[] chunk = <span class="kw">new</span> <span class="kw">byte</span>[1024];
+    int read;
+    <span class="kw">long</span> total = 0;
+    <span class="kw">while</span> ((read = fis.read(chunk)) != -1) {
+        total += read;
+    }
+    System.out.println("Read bytes: " + total);
+} <span class="kw">catch</span> (IOException e) {
+    e.printStackTrace();
+}</pre>
+                </article>
+
+                <article class="fstream-card output">
+                    <h4 class="fstream-card-title">FileOutputStream</h4>
+                    <p class="fstream-card-desc">Writes bytes from program to file.</p>
+                    <div class="fstream-analogy">
+                        <div class="fstream-icon-wrap" aria-hidden="true">
+                            <div class="fos-icon">&uarr;</div>
+                        </div>
+                        <p class="fstream-analogy-text">Data flows out of your app and gets written to destination file.</p>
+                    </div>
+                    <p class="fstream-mini-title">Key Features</p>
+                    <ul class="fstream-list">
+                        <li>Byte-based write stream</li>
+                        <li>Unbuffered direct writes</li>
+                        <li>Overwrite or append mode</li>
+                    </ul>
+                    <pre class="fstream-code"><span class="kw">byte</span>[] dataBytes = "event=login".getBytes();
+<span class="kw">try</span> (FileOutputStream fos =
+         <span class="kw">new</span> FileOutputStream("out.bin", <span class="kw">true</span>)) {
+    fos.write(dataBytes);
+    fos.write('\n');
+    fos.flush();
+} <span class="kw">catch</span> (IOException e) {
+    e.printStackTrace();
+}</pre>
+                </article>
+            </div>
+
+            <div class="fstreams-bottom-note">
+                <strong>Note:</strong> Many small <code>read()</code> / <code>write()</code> calls can be slow. For performance, wrap with buffered streams on the next slide.
+            </div>
+
+            <div class="fstreams-extra">
+                <article class="fstreams-extra-card">
+                    <h5>Where You Usually See It</h5>
+                    <ul class="fstreams-extra-list">
+                        <li>Raw binary upload/download handlers</li>
+                        <li>Low-level adapters under higher-level APIs</li>
+                        <li>Short tools where simplicity is enough</li>
+                    </ul>
+                </article>
+
+                <article class="fstreams-extra-card warn">
+                    <h5>Common Performance Mistakes</h5>
+                    <ul class="fstreams-extra-list">
+                        <li>Reading one byte at a time in big files</li>
+                        <li>Writing tiny chunks in tight loops</li>
+                        <li>Skipping resource close on exceptions</li>
+                    </ul>
+                </article>
+
+                <article class="fstreams-extra-card tip">
+                    <h5>Fast Upgrade Path</h5>
+                    <pre class="fstreams-mini-code">InputStream in =
+    <span class="kw">new</span> BufferedInputStream(
+        <span class="kw">new</span> FileInputStream("in.bin"));</pre>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" id="s4">
+        <div class="slide-card bstreams-slide">
+            <span class="badge">Slide 4</span>
+            <div class="bstreams-head">
+                <span class="bstreams-number">3</span>
+                <div>
+                    <h3 class="bstreams-title">Buffered Streams</h3>
+                    <p class="bstreams-subtitle">BufferedInputStream and BufferedOutputStream improve I/O performance by reducing direct disk operations.</p>
+                </div>
+            </div>
+
+            <div class="bstreams-overview">
+                <strong>Main idea:</strong> Input stream reads large chunks into RAM, output stream accumulates writes in RAM and flushes to disk in batches.
+            </div>
+
+            <div class="bstreams-grid">
+                <article class="bstream-card">
+                    <h4 class="bstream-title">BufferedInputStream</h4>
+                    <p class="bstream-desc">Reads bytes faster by buffering input.</p>
+                    <div class="bstream-analogy">
+                        <div class="bstream-icon-wrap" aria-hidden="true">
+                            <img class="bstream-icon-img" src="images/bufferedinputstream-cart.png" alt="">
+                        </div>
+                        <p class="bstream-analogy-text">Buy many eggs at once instead of one-by-one trips.</p>
+                    </div>
+                    <p class="bstream-mini-title">Key Features</p>
+                    <ul class="bstream-list">
+                        <li>Default buffer: ~8 KB</li>
+                        <li>Fewer disk reads</li>
+                        <li>Best for large files</li>
+                    </ul>
+                    <pre class="bstream-code"><span class="kw">try</span> (BufferedInputStream bis =
+         <span class="kw">new</span> BufferedInputStream(<span class="kw">new</span> FileInputStream(file))) {
+    <span class="kw">byte</span>[] chunk = <span class="kw">new</span> <span class="kw">byte</span>[4096];
+    int read;
+    <span class="kw">long</span> total = 0;
+    <span class="kw">while</span> ((read = bis.read(chunk)) != -1) {
+        total += read;
+    }
+    System.out.println("Buffered read bytes: " + total);
+} <span class="kw">catch</span> (IOException e) {
+    e.printStackTrace();
+}</pre>
+                </article>
+
+                <article class="bstream-card output">
+                    <h4 class="bstream-title">BufferedOutputStream</h4>
+                    <p class="bstream-desc">Writes bytes faster by buffering output.</p>
+                    <div class="bstream-analogy">
+                        <div class="bstream-icon-wrap" aria-hidden="true">
+                            <div class="bos-icon">&uarr;</div>
+                        </div>
+                        <p class="bstream-analogy-text">Collect many bytes, then send in one batch to destination.</p>
+                    </div>
+                    <p class="bstream-mini-title">Key Features</p>
+                    <ul class="bstream-list">
+                        <li>Accumulates bytes in RAM</li>
+                        <li>Fewer disk/network writes</li>
+                        <li>Use flush() before critical boundaries</li>
+                    </ul>
+                    <pre class="bstream-code"><span class="kw">try</span> (BufferedOutputStream bos =
+         <span class="kw">new</span> BufferedOutputStream(<span class="kw">new</span> FileOutputStream(file, <span class="kw">true</span>))) {
+    bos.write(dataBytes);
+    bos.flush();
+} <span class="kw">catch</span> (IOException e) {
+    e.printStackTrace();
+}</pre>
+                </article>
+            </div>
+
+            <div class="bstreams-bottom-note">
+                <strong>When to use:</strong> Use both together in backend pipelines: <code>BufferedInputStream</code> for fast reads and <code>BufferedOutputStream</code> for fast writes.
+            </div>
+
+            <div class="bstreams-extra">
+                <article class="bstreams-extra-card">
+                    <h5>Best Fit Scenarios</h5>
+                    <ul class="bstreams-extra-list">
+                        <li>Large media files and export jobs</li>
+                        <li>Batch processing with many records</li>
+                        <li>High-throughput import pipelines</li>
+                    </ul>
+                </article>
+
+                <article class="bstreams-extra-card warn">
+                    <h5>Pitfalls to Avoid</h5>
+                    <ul class="bstreams-extra-list">
+                        <li>Forgetting <code>flush()</code> before program end</li>
+                        <li>Tiny custom buffers for huge files</li>
+                        <li>Mixing text encoding logic with raw bytes</li>
+                    </ul>
+                </article>
+
+                <article class="bstreams-extra-card good">
+                    <h5>Production Pattern</h5>
+                    <pre class="bstreams-mini-code"><span class="kw">try</span> (InputStream in = <span class="kw">new</span> BufferedInputStream(...);
+     OutputStream out = <span class="kw">new</span> BufferedOutputStream(...)) {
+    in.transferTo(out);
+}</pre>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" id="s5">
+        <div class="slide-card cmp-slide">
+            <span class="badge">Slide 5</span>
+            <h3 class="cmp-title">FileInputStream vs BufferedInputStream</h3>
+
+            <div class="cmp-grid">
+                <div class="cmp-panel">
+                    <h4 class="cmp-panel-title">Data Flow Comparison</h4>
+                    <div class="cmp-panel-body">
+                        <div class="cmp-flow-row">
+                            <div class="cmp-flow-node file">File on Disk</div>
+                            <div class="cmp-arrow">-&gt;</div>
+                            <div class="cmp-flow-node fis">FileInputStream<br>reads directly from disk</div>
+                            <div class="cmp-arrow">-&gt;</div>
+                            <div class="cmp-flow-node program">Your Program<br>consumes data</div>
+                        </div>
+                        <p class="cmp-note">BufferedInputStream variant: File on Disk -&gt; BufferedInputStream (memory buffer) -&gt; Program.</p>
+                    </div>
+                </div>
+
+                <div class="cmp-panel">
+                    <h4 class="cmp-panel-title">Why Buffering Is Important</h4>
+                    <div class="cmp-panel-body">
+                        <div class="cmp-why-grid">
+                            <div class="cmp-why-card without">
+                                <h5>Without Buffering (FileInputStream)</h5>
+                                <ul class="cmp-mini-list">
+                                    <li><code>read()</code> -&gt; disk access</li>
+                                    <li><code>read()</code> -&gt; disk access</li>
+                                    <li><code>read()</code> -&gt; disk access</li>
+                                    <li><code>read()</code> -&gt; disk access</li>
+                                </ul>
+                                <p class="cmp-mini-note slow">Many small disk accesses = SLOW</p>
+                            </div>
+                            <div class="cmp-why-card with">
+                                <h5>With Buffering (BufferedInputStream)</h5>
+                                <ul class="cmp-mini-list">
+                                    <li>Disk access reads big chunk (e.g., 8 KB)</li>
+                                    <li>Data stored in RAM buffer</li>
+                                    <li>Program reads from memory quickly</li>
+                                </ul>
+                                <p class="cmp-mini-note fast">Fewer disk accesses = FAST</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cmp-grid">
+                <div class="cmp-table-wrap">
+                    <h4 class="cmp-table-title">Comparison Table</h4>
+                    <table class="cmp-table" aria-label="Comparison table of File, FileInputStream and BufferedInputStream">
+                        <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>File</th>
+                            <th>FileInputStream</th>
+                            <th>BufferedInputStream</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Purpose</td>
+                            <td>Represents file/directory</td>
+                            <td>Reads bytes from file</td>
+                            <td>Reads bytes faster using buffer</td>
+                        </tr>
+                        <tr>
+                            <td>Works With</td>
+                            <td>File and directory metadata</td>
+                            <td>Binary data (bytes)</td>
+                            <td>Any input stream (usually FileInputStream)</td>
+                        </tr>
+                        <tr>
+                            <td>Data Type</td>
+                            <td>Path and info</td>
+                            <td>byte</td>
+                            <td>byte</td>
+                        </tr>
+                        <tr>
+                            <td>Buffering</td>
+                            <td>No</td>
+                            <td>No</td>
+                            <td>Yes (default 8 KB)</td>
+                        </tr>
+                        <tr>
+                            <td>Speed</td>
+                            <td>Not for reading</td>
+                            <td>Slow (many disk accesses)</td>
+                            <td>Fast (fewer disk accesses)</td>
+                        </tr>
+                        <tr>
+                            <td>Uses</td>
+                            <td>Existence, create, delete, rename</td>
+                            <td>Read binary files</td>
+                            <td>Performance improvement for I/O</td>
+                        </tr>
+                        <tr>
+                            <td>Example Use Case</td>
+                            <td>Check upload path and file info</td>
+                            <td>Read image/video/pdf directly</td>
+                            <td>Large files, uploads/downloads, streams</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="cmp-code-wrap">
+                    <h4 class="cmp-code-title">How To Use Together (Best Practice)</h4>
+                    <p class="cmp-code-sub">Always wrap FileInputStream with BufferedInputStream for better performance.</p>
+                    <pre class="cmp-code"><span class="kw">File</span> file = <span class="kw">new</span> File("photo.jpg");
+<span class="kw">try</span> (FileInputStream fis = <span class="kw">new</span> FileInputStream(file);
+     BufferedInputStream bis = <span class="kw">new</span> BufferedInputStream(fis)) {
+    <span class="kw">byte</span>[] buffer = <span class="kw">new</span> <span class="kw">byte</span>[1024];
+    int bytesRead;
+    <span class="kw">while</span> ((bytesRead = bis.read(buffer)) != -1) {
+        // process buffer [0..bytesRead)
+        System.out.println("Read bytes: " + bytesRead);
+    }
+} <span class="kw">catch</span> (IOException e) {
+    e.printStackTrace();
+}</pre>
+                    <div class="cmp-why-buffer"><strong>Why <code>byte[]</code> buffer?</strong> We read many bytes at once into array memory. This reduces <code>read()</code> calls and improves speed.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" id="s6">
+        <div class="slide-card enc-slide">
+            <span class="badge">Slide 6</span>
+            <h3 class="enc-title">Encoding / Charset Fundamentals</h3>
+            <p class="enc-subtitle">How text is converted into bytes, why mojibake appears, and the production-safe UTF-8 pattern.</p>
+
+            <div class="enc-boxes">
+                <article class="enc-box">
+                    <h4>What Is Encoding?</h4>
+                    <p>Computers store data as 0 and 1, so text must be encoded to bytes before saving or transferring.</p>
+                    <div class="enc-flow">
+                        <div class="enc-flow-node">Text<br><code>A, ə, ü, ☺</code></div>
+                        <div class="enc-flow-arrow" aria-hidden="true">→</div>
+                        <div class="enc-flow-node">Bytes<br><code>01001010 ...</code></div>
+                    </div>
+                    <div class="enc-byte-grid" role="table" aria-label="UTF-8 byte lengths">
+                        <div class="enc-byte-row" role="row">
+                            <div class="enc-byte-cell head" role="columnheader">Char</div>
+                            <div class="enc-byte-cell head" role="columnheader">Bytes</div>
+                            <div class="enc-byte-cell head" role="columnheader">Example</div>
+                        </div>
+                        <div class="enc-byte-row" role="row">
+                            <div class="enc-byte-cell" role="cell">A</div>
+                            <div class="enc-byte-cell" role="cell">1</div>
+                            <div class="enc-byte-cell" role="cell">ASCII character</div>
+                        </div>
+                        <div class="enc-byte-row" role="row">
+                            <div class="enc-byte-cell" role="cell">ə</div>
+                            <div class="enc-byte-cell" role="cell">2</div>
+                            <div class="enc-byte-cell" role="cell">Azeri letter</div>
+                        </div>
+                        <div class="enc-byte-row" role="row">
+                            <div class="enc-byte-cell" role="cell">☺</div>
+                            <div class="enc-byte-cell" role="cell">3</div>
+                            <div class="enc-byte-cell" role="cell">Symbol emoji-like</div>
+                        </div>
+                    </div>
+                    <div class="enc-mini-metrics" aria-label="UTF-8 quick facts">
+                        <div class="enc-metric">UTF-8 range:<br>1-4 bytes</div>
+                        <div class="enc-metric">ASCII-safe:<br>0x00-0x7F</div>
+                        <div class="enc-metric">Unicode support:<br>100%</div>
+                    </div>
+                    <ul class="enc-impact-list">
+                        <li><strong>Storage:</strong> English text stays compact with 1 byte/char.</li>
+                        <li><strong>Azeri/Turkish:</strong> letters like <code>ə, ğ, ş</code> need multi-byte UTF-8.</li>
+                        <li><strong>Logs/API:</strong> mixed services must agree on the same charset.</li>
+                    </ul>
+                </article>
+
+                <article class="enc-box">
+                    <h4>Common Encodings</h4>
+                    <div class="enc-encoding-grid" role="table" aria-label="Common character encodings">
+                        <div class="enc-encoding-row" role="row">
+                            <div class="enc-encoding-name" role="cell">ASCII</div>
+                            <div class="enc-encoding-desc" role="cell">Old English-only character set</div>
+                        </div>
+                        <div class="enc-encoding-row" role="row">
+                            <div class="enc-encoding-name" role="cell">UTF-8</div>
+                            <div class="enc-encoding-desc" role="cell">Modern default used in most systems</div>
+                        </div>
+                        <div class="enc-encoding-row" role="row">
+                            <div class="enc-encoding-name" role="cell">UTF-16</div>
+                            <div class="enc-encoding-desc" role="cell">Common Java internal representation</div>
+                        </div>
+                        <div class="enc-encoding-row" role="row">
+                            <div class="enc-encoding-name" role="cell">ISO-8859-1</div>
+                            <div class="enc-encoding-desc" role="cell">Legacy single-byte systems</div>
+                        </div>
+                        <div class="enc-encoding-row" role="row">
+                            <div class="enc-encoding-name" role="cell">Windows-1254</div>
+                            <div class="enc-encoding-desc" role="cell">Old Turkish desktop and CSV exports</div>
+                        </div>
+                    </div>
+                    <div class="enc-encoding-notes">
+                        <div class="enc-note-card"><strong>HTTP/API:</strong> send <code>Content-Type: application/json; charset=UTF-8</code>.</div>
+                        <div class="enc-note-card"><strong>DB:</strong> keep UTF-8/UTF8MB4 end-to-end to avoid mixed collation bugs.</div>
+                        <div class="enc-note-card"><strong>Files:</strong> save IDE/project files in UTF-8, not platform default.</div>
+                        <div class="enc-note-card"><strong>Kafka/Rabbit:</strong> producer and consumer should decode with the same charset.</div>
+                    </div>
+                    <div class="enc-decision-grid" role="table" aria-label="Encoding decision hints">
+                        <div class="enc-decision-row" role="row">
+                            <div class="enc-decision-cell head" role="columnheader">Scenario</div>
+                            <div class="enc-decision-cell head" role="columnheader">Recommended</div>
+                        </div>
+                        <div class="enc-decision-row" role="row">
+                            <div class="enc-decision-cell" role="cell">New backend</div>
+                            <div class="enc-decision-cell" role="cell">UTF-8 everywhere</div>
+                        </div>
+                        <div class="enc-decision-row" role="row">
+                            <div class="enc-decision-cell" role="cell">Legacy import</div>
+                            <div class="enc-decision-cell" role="cell">Detect source charset first</div>
+                        </div>
+                        <div class="enc-decision-row" role="row">
+                            <div class="enc-decision-cell" role="cell">CSV exchange</div>
+                            <div class="enc-decision-cell" role="cell">Publish encoding rule in docs</div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="enc-box">
+                    <h4>Wrong vs Correct</h4>
+                    <div class="enc-two-cols">
+                        <div class="enc-code-card wrong">
+                            <h5>WRONG (Avoid)</h5>
+                            <pre class="enc-code">FileReader reader =
+    <span class="kw">new</span> FileReader("data.txt");</pre>
+                            <ul class="enc-bullets">
+                                <li>Uses platform default charset</li>
+                                <li>Can break across environments</li>
+                            </ul>
+                        </div>
+                        <div class="enc-code-card correct">
+                            <h5>CORRECT</h5>
+                            <pre class="enc-code">String content = Files.readString(
+    Path.of("data.txt"),
+    StandardCharsets.UTF_8
+);</pre>
+                            <ul class="enc-bullets">
+                                <li>Charset is explicit and stable</li>
+                                <li>UTF-8 matches modern backend practice</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="enc-practice-list">
+                        <div class="enc-practice-item"><strong>Reader:</strong> <code>Files.newBufferedReader(path, UTF_8)</code></div>
+                        <div class="enc-practice-item"><strong>Writer:</strong> <code>Files.newBufferedWriter(path, UTF_8)</code></div>
+                        <div class="enc-practice-item"><strong>Encode:</strong> <code>text.getBytes(StandardCharsets.UTF_8)</code></div>
+                        <div class="enc-practice-item"><strong>Decode:</strong> <code>new String(bytes, StandardCharsets.UTF_8)</code></div>
+                    </div>
+                </article>
+
+                <article class="enc-box">
+                    <h4>Important Rule + Real Bug</h4>
+                    <p>If text is saved with one encoding but read with another, characters corrupt (mojibake).</p>
+                    <div class="enc-rule"><strong>Always specify charset explicitly.</strong> Use UTF-8 end-to-end.</div>
+                    <div class="enc-bug">
+                        <div class="enc-bug-tag">Real Production Bug</div>
+                        <div class="enc-bug-item">Backend saved:<br><strong>Azerbaycan</strong></div>
+                        <div class="enc-bug-arrow" aria-hidden="true">→</div>
+                        <div class="enc-bug-item">Frontend received:<br><strong>AzÉ™rbaycan</strong></div>
+                        <div class="enc-bug-item">Reason:<br><strong>Different encoding</strong></div>
+                    </div>
+                    <div class="enc-failure-chain" aria-label="Failure chain">
+                        <div class="enc-failure-step">File saved as UTF-8</div>
+                        <div class="enc-failure-arrow" aria-hidden="true">→</div>
+                        <div class="enc-failure-step">Read as ISO-8859-1</div>
+                        <div class="enc-failure-arrow" aria-hidden="true">→</div>
+                        <div class="enc-failure-step">Corrupted output in UI</div>
+                    </div>
+                    <div class="enc-debug-list" aria-label="Debug checklist">
+                        <div class="enc-debug-item"><strong>1) Source:</strong> verify producer charset (file, DB, API).</div>
+                        <div class="enc-debug-item"><strong>2) Transport:</strong> check <code>Content-Type</code> and headers.</div>
+                        <div class="enc-debug-item"><strong>3) Consumer:</strong> decode bytes using explicit UTF-8.</div>
+                        <div class="enc-debug-item"><strong>4) Test:</strong> include non-ASCII sample (<code>ə, ş, ü</code>) in CI.</div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" id="s7">
+        <div class="slide-card cs7-slide">
+            <span class="badge">Slide 7</span>
+            <h3 class="cs7-title">Character Streams and Practical Backend Mapping</h3>
+            <p class="cs7-subtitle">Character streams are designed for text data and are encoding-aware; byte streams are for raw binary content.</p>
+
+            <div class="cs7-main">
+                <article class="cs7-card cs7-stream-card">
+                    <h4>Character Streams (Text Data)</h4>
+                    <p class="cs7-muted">Used for txt, json, xml, csv, config files, and application logs.</p>
+
+                    <div class="cs7-class-block">
+                        <div class="cs7-class-head">Main Classes</div>
+                        <table class="cs7-class-table" aria-label="Character stream classes">
+                            <tbody>
+                            <tr>
+                                <td class="name">Reader</td>
+                                <td>Reads characters</td>
+                            </tr>
+                            <tr>
+                                <td class="name">Writer</td>
+                                <td>Writes characters</td>
+                            </tr>
+                            <tr>
+                                <td class="name">FileReader</td>
+                                <td>Reads text files</td>
+                            </tr>
+                            <tr>
+                                <td class="name">FileWriter</td>
+                                <td>Writes text files</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="cs7-example">
+                        <h5>Example: Read Text File</h5>
+                        <pre class="cs7-code"><span class="kw">FileReader</span> reader = <span class="kw">new</span> FileReader("data.txt");
+int ch;
+<span class="kw">while</span> ((ch = reader.read()) != -1) {
+    System.out.print((char) ch);
+}
+reader.close();</pre>
+                    </div>
+                </article>
+
+                <article class="cs7-card cs7-uses-card">
+                    <h4>Real Backend Use Cases</h4>
+                    <ul class="cs7-use-list">
+                        <li><span>Upload image</span><span class="cs7-chip byte">Byte stream</span></li>
+                        <li><span>Read config file</span><span class="cs7-chip char">Character stream</span></li>
+                        <li><span>Generate PDF</span><span class="cs7-chip byte">Byte stream</span></li>
+                        <li><span>Read CSV</span><span class="cs7-chip char">Character stream</span></li>
+                        <li><span>Store logs</span><span class="cs7-chip char">Character stream</span></li>
+                    </ul>
+                </article>
+            </div>
+
+            <article class="cs7-card cs7-compare-card">
+                <h4>Byte vs Character Stream</h4>
+                <table class="cs7-compare-table" aria-label="Byte stream versus character stream comparison">
+                    <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Byte Stream</th>
+                        <th>Character Stream</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Works with</td>
+                        <td>Binary data (image, video, pdf)</td>
+                        <td>Text data (txt, json, config, csv)</td>
+                    </tr>
+                    <tr>
+                        <td>Unit</td>
+                        <td>byte (8-bit)</td>
+                        <td>char (16-bit)</td>
+                    </tr>
+                    <tr>
+                        <td>Base classes</td>
+                        <td>InputStream / OutputStream</td>
+                        <td>Reader / Writer</td>
+                    </tr>
+                    <tr>
+                        <td>Encoding aware</td>
+                        <td><span class="cs7-no">No</span></td>
+                        <td><span class="cs7-yes">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td>Examples</td>
+                        <td>photo.jpg, song.mp3, report.pdf</td>
+                        <td>data.txt, log.txt, config.json</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </article>
+        </div>
+    </section>
+
+    <section class="slide" id="s8">
+        <div class="slide-card nio8-slide">
+            <span class="badge">Slide 8</span>
+            <h3 class="nio8-title">NIO.2 APIs: Path, Files, Directory Operations</h3>
+            <p class="nio8-subtitle">Use <code>java.nio.file</code> for modern file-path handling and safe filesystem operations in backend services.</p>
+
+            <div class="nio8-main">
+                <article class="nio8-card">
+                    <h4>Path</h4>
+                    <div class="nio8-codebox">
+                        <h5>Old Way</h5>
+                        <pre class="nio8-code">File file = new File("test.txt");</pre>
+                    </div>
+                    <div class="nio8-codebox">
+                        <h5>Modern Way</h5>
+                        <pre class="nio8-code">Path path = Path.of("test.txt");</pre>
+                    </div>
+                    <div class="nio8-codebox">
+                        <h5>Path Operations</h5>
+                        <pre class="nio8-code">Path path = Path.of("data/users.txt");
+path.getFileName(); // users.txt
+path.getParent();   // data
+path.getRoot();     // / (root)</pre>
+                    </div>
+                    <div class="nio8-flow">
+                        <div class="nio8-node">/</div>
+                        <div class="nio8-arrow" aria-hidden="true">→</div>
+                        <div class="nio8-node">data</div>
+                        <div class="nio8-arrow" aria-hidden="true">→</div>
+                        <div class="nio8-node">users.txt</div>
+                    </div>
+                </article>
+
+                <article class="nio8-card">
+                    <h4>Files Utility Class (Powerful)</h4>
+                    <ul class="nio8-op-list">
+                        <li><span class="nio8-op-name">Create file</span><span class="nio8-op-code">Files.createFile(Path.of("test.txt"));</span></li>
+                        <li><span class="nio8-op-name">Create directory</span><span class="nio8-op-code">Files.createDirectory(Path.of("logs"));</span></li>
+                        <li><span class="nio8-op-name">Check exists</span><span class="nio8-op-code">Files.exists(Path.of("data.txt"));</span></li>
+                        <li><span class="nio8-op-name">Read file</span><span class="nio8-op-code">String c = Files.readString(Path.of("data.txt"));</span></li>
+                        <li><span class="nio8-op-name">Write file</span><span class="nio8-op-code">Files.writeString(Path.of("out.txt"), "Hello Java");</span></li>
+                        <li><span class="nio8-op-name">Copy file</span><span class="nio8-op-code">Files.copy(Path.of("a.txt"), Path.of("b.txt"));</span></li>
+                        <li><span class="nio8-op-name">Delete file</span><span class="nio8-op-code">Files.delete(Path.of("a.txt"));</span></li>
+                        <li><span class="nio8-op-name">List directory</span><span class="nio8-op-code">Files.list(Path.of(".")).forEach(System.out::println);</span></li>
+                        <li><span class="nio8-op-name">Walk tree</span><span class="nio8-op-code">Files.walk(Path.of(".")).forEach(System.out::println);</span></li>
+                    </ul>
+                </article>
+            </div>
+
+            <article class="nio8-card nio8-real">
+                <h4>Real Backend Examples</h4>
+                <div class="nio8-real-grid">
+                    <div class="nio8-real-item"><strong>Read config</strong><span>application.yml</span></div>
+                    <div class="nio8-real-item"><strong>Store logs</strong><span>log files</span></div>
+                    <div class="nio8-real-item"><strong>Upload files</strong><span>image storage</span></div>
+                    <div class="nio8-real-item"><strong>Export reports</strong><span>CSV / PDF</span></div>
+                    <div class="nio8-real-item"><strong>Batch processing</strong><span>directory scanning</span></div>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="slide" id="s9">
+        <div class="slide-card safe9-slide">
+            <span class="badge">Slide 9</span>
+            <h3 class="safe9-title">Safe File Handling in Backend Utilities</h3>
+            <p class="safe9-subtitle">Prevent leaks, memory crashes, path traversal, and accidental overwrite when working with file uploads and storage.</p>
+
+            <div class="safe9-layout">
+                <div class="safe9-risks">
+                    <article class="safe9-card">
+                        <h4>1. Resource Leak</h4>
+                        <div class="safe9-box bad">
+                            <div class="safe9-label bad">Bad</div>
+                            <pre class="safe9-code">FileReader reader = new FileReader("data.txt");
+reader.readLine(); // if exception: handle stays open</pre>
+                        </div>
+                        <div class="safe9-box good">
+                            <div class="safe9-label good">Best Solution</div>
+                            <pre class="safe9-code"><span class="kw">try</span> (BufferedReader reader = Files.newBufferedReader(path)) {
+  String line;
+  <span class="kw">while</span> ((line = reader.readLine()) != null) { process(line); }
+}</pre>
+                        </div>
+                    </article>
+
+                    <article class="safe9-card">
+                        <h4>2. Large File Memory Crash</h4>
+                        <div class="safe9-box bad">
+                            <div class="safe9-label bad">Bad</div>
+                            <pre class="safe9-code">Files.readString(path); // huge file</pre>
+                            <p class="safe9-mini">Can cause <code>OutOfMemoryError</code>.</p>
+                        </div>
+                        <div class="safe9-box good">
+                            <div class="safe9-label good">Better Solution</div>
+                            <pre class="safe9-code"><span class="kw">try</span> (BufferedReader reader = Files.newBufferedReader(path)) {
+  reader.lines().forEach(this::processLine);
+}</pre>
+                        </div>
+                    </article>
+
+                    <article class="safe9-card">
+                        <h4>3. Path Traversal Attack</h4>
+                        <p class="safe9-mini">Dangerous input: <code>../../etc/passwd</code></p>
+                        <div class="safe9-box bad">
+                            <div class="safe9-label bad">Bad</div>
+                            <pre class="safe9-code">Path path = Path.of(userInput);</pre>
+                            <p class="safe9-mini">May access sensitive files.</p>
+                        </div>
+                        <div class="safe9-box good">
+                            <div class="safe9-label good">Safer Approach</div>
+                            <pre class="safe9-code">Path base = Path.of("uploads");
+Path safe = base.resolve(userInput).normalize();
+<span class="kw">if</span> (!safe.startsWith(base)) <span class="kw">throw</span> new SecurityException();</pre>
+                        </div>
+                    </article>
+
+                    <article class="safe9-card">
+                        <h4>4. Overwriting Important Files</h4>
+                        <p class="safe9-mini">Always validate before writing:</p>
+                        <ul class="safe9-list check">
+                            <li>Validate file name and extension</li>
+                            <li>Validate file size and permissions</li>
+                            <li>Use dedicated safe upload folder</li>
+                            <li>Prefer UUID-based file names</li>
+                        </ul>
+                        <div class="safe9-box good">
+                            <div class="safe9-label good">Safe Write Pattern</div>
+                            <pre class="safe9-code">Path target = uploadDir.resolve(uuidName).normalize();
+Files.copy(in, target); // no direct user path write</pre>
+                        </div>
+                    </article>
+                </div>
+
+                <aside class="safe9-side">
+                    <article class="safe9-card">
+                        <h4>Most Used Classes</h4>
+                        <table class="safe9-class-table" aria-label="Most used Java file handling classes">
+                            <tbody>
+                            <tr><td>InputStream</td><td>Read bytes</td></tr>
+                            <tr><td>OutputStream</td><td>Write bytes</td></tr>
+                            <tr><td>Reader</td><td>Read text</td></tr>
+                            <tr><td>Writer</td><td>Write text</td></tr>
+                            <tr><td>BufferedReader</td><td>Fast text reading</td></tr>
+                            <tr><td>BufferedWriter</td><td>Fast text writing</td></tr>
+                            <tr><td>Path</td><td>Modern file path</td></tr>
+                            <tr><td>Files</td><td>Modern operations</td></tr>
+                        </tbody>
+                        </table>
+                    </article>
+
+                    <article class="safe9-card">
+                        <h4>Safe Upload Checklist</h4>
+                        <ul class="safe9-list check">
+                            <li>Avoid direct user-controlled paths</li>
+                            <li>Normalize and validate every path</li>
+                            <li>Use try-with-resources for I/O</li>
+                            <li>Stream large files line-by-line</li>
+                            <li>Use UTF-8 consistently in text I/O</li>
+                        </ul>
+                    </article>
+                </aside>
+            </div>
+
+            <div class="safe9-bottom">Production rule: stream large files, validate and normalize paths, and always use try-with-resources.</div>
+        </div>
+    </section>
+
+    <div class="deck-controls" role="navigation" aria-label="Slide navigation controls">
+        <button class="nav-btn" id="prevBtn" type="button">Previous</button>
+        <div class="progress-area">
+            <div class="counter" id="slideCounter">Slide 1 of 9</div>
+            <input id="slideRange" type="range" min="1" max="9" value="1"/>
+        </div>
+        <button class="nav-btn" id="nextBtn" type="button">Next</button>
+    </div>
+
+    <a class="home-btn" href="index.html" aria-label="Back to lessons">All Lessons</a>
+
+    <button id="fullscreenBtn" class="fullscreen-btn" type="button" aria-label="Enter fullscreen"
+            title="Enter fullscreen">
+        <svg class="fullscreen-icon-enter" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 4H4v5"></path>
+            <path d="M15 4h5v5"></path>
+            <path d="M4 15v5h5"></path>
+            <path d="M20 15v5h-5"></path>
+        </svg>
+        <svg class="fullscreen-icon-exit" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 9H4V4"></path>
+            <path d="M15 9h5V4"></path>
+            <path d="M4 20v-5h5"></path>
+            <path d="M20 20v-5h-5"></path>
+        </svg>
+    </button>
+</main>
+
+<script>
+    (() => {
+        const slides = Array.from(document.querySelectorAll(".slide"));
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const slideRange = document.getElementById("slideRange");
+        const slideCounter = document.getElementById("slideCounter");
+        const fullscreenBtn = document.getElementById("fullscreenBtn");
+
+        let currentIndex = 0;
+
+        function parseHashIndex() {
+            if (!window.location.hash) return 0;
+            const id = window.location.hash.replace("#", "");
+            const idx = slides.findIndex((slide) => slide.id === id);
+            return idx >= 0 ? idx : 0;
+        }
+
+        function updateHash() {
+            const id = slides[currentIndex]?.id;
+            if (!id) return;
+            if (window.location.hash === `#${id}`) return;
+            window.history.replaceState(null, "", `#${id}`);
+        }
+
+        function fitSlideContent(slide) {
+            if (!slide) return;
+            const card = slide.querySelector(".slide-card");
+            if (!card) return;
+
+            card.classList.remove("compact-1", "compact-2", "compact-3");
+            const compactLevels = ["compact-1", "compact-2", "compact-3"];
+            for (const level of compactLevels) {
+                if (card.scrollHeight <= card.clientHeight + 2) break;
+                card.classList.add(level);
+            }
+        }
+
+        function showSlide(index, updateUrl = true) {
+            currentIndex = Math.max(0, Math.min(index, slides.length - 1));
+            slides.forEach((slide, i) => {
+                const active = i === currentIndex;
+                slide.classList.toggle("active", active);
+                slide.setAttribute("aria-hidden", String(!active));
+                if (active) {
+                    slide.scrollTop = 0;
+                    const card = slide.querySelector(".slide-card");
+                    if (card) {
+                        card.scrollTop = 0;
+                    }
+                    fitSlideContent(slide);
+                }
+            });
+
+            slideRange.value = String(currentIndex + 1);
+            slideCounter.textContent = `Slide ${currentIndex + 1} of ${slides.length}`;
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === slides.length - 1;
+
+            if (updateUrl) {
+                updateHash();
+            }
+        }
+
+        function goNext() {
+            if (currentIndex < slides.length - 1) {
+                showSlide(currentIndex + 1);
+            }
+        }
+
+        function goPrevious() {
+            if (currentIndex > 0) {
+                showSlide(currentIndex - 1);
+            }
+        }
+
+        async function toggleFullscreen() {
+            try {
+                if (!document.fullscreenElement) {
+                    await document.documentElement.requestFullscreen();
+                } else {
+                    await document.exitFullscreen();
+                }
+            } catch (_error) {
+                // Ignore browser fullscreen errors
+            }
+        }
+
+        function syncFullscreenUi() {
+            const isFullscreen = Boolean(document.fullscreenElement);
+            document.body.classList.toggle("is-fullscreen", isFullscreen);
+            if (fullscreenBtn) {
+                const label = isFullscreen ? "Exit fullscreen" : "Enter fullscreen";
+                fullscreenBtn.setAttribute("aria-label", label);
+                fullscreenBtn.title = label;
+            }
+        }
+
+        slideRange.max = String(slides.length);
+
+        prevBtn.addEventListener("click", goPrevious);
+        nextBtn.addEventListener("click", goNext);
+        slideRange.addEventListener("input", (event) => {
+            const value = Number(event.target.value) - 1;
+            showSlide(value);
+        });
+
+        if (fullscreenBtn) {
+            fullscreenBtn.addEventListener("click", toggleFullscreen);
+        }
+
+        document.addEventListener("fullscreenchange", () => {
+            syncFullscreenUi();
+            fitSlideContent(slides[currentIndex]);
+        });
+
+        let resizeTimer;
+        window.addEventListener("resize", () => {
+            window.clearTimeout(resizeTimer);
+            resizeTimer = window.setTimeout(() => {
+                fitSlideContent(slides[currentIndex]);
+            }, 90);
+        });
+
+        window.addEventListener("hashchange", () => {
+            showSlide(parseHashIndex(), false);
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "ArrowRight" || event.key === "PageDown") {
+                event.preventDefault();
+                goNext();
+            } else if (event.key === "ArrowLeft" || event.key === "PageUp") {
+                event.preventDefault();
+                goPrevious();
+            } else if (event.key === "Home") {
+                event.preventDefault();
+                showSlide(0);
+            } else if (event.key === "End") {
+                event.preventDefault();
+                showSlide(slides.length - 1);
+            } else if (event.key.toLowerCase() === "f") {
+                const target = event.target;
+                const isTyping =
+                    target &&
+                    (target.tagName === "INPUT" ||
+                        target.tagName === "TEXTAREA" ||
+                        target.isContentEditable);
+                if (!isTyping) {
+                    event.preventDefault();
+                    toggleFullscreen();
+                }
+            }
+        });
+
+        showSlide(parseHashIndex(), false);
+        syncFullscreenUi();
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,2439 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Section 26: Streams API - Slide-by-Slide Guide</title>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap");
+
+        :root {
+            --bg: #fffdf5;
+            --foreground: #1f1f1f;
+            --card: #ffffff;
+            --muted: #5a5f69;
+            --primary: #7a63f6;
+            --accent: #ff9ecc;
+            --success: #8ce28f;
+            --destructive: #ff7d70;
+            --secondary: #f6efe0;
+            --code-bg: #1f2333;
+            --code-text: #f8f8f8;
+            --dot-bg: #f7f5ee;
+            --dot-color: #d8d3c6;
+            --heading: #24304a;
+            --bodytext: #4e5f7c;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Plus Jakarta Sans", "Outfit", Inter, "Segoe UI", Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--foreground);
+            line-height: 1.55;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            max-width: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        header,
+        nav {
+            display: none;
+        }
+
+        .slide {
+            --card-bg: var(--dot-bg);
+            --shadow-x: 9px;
+            --shadow-y: 9px;
+            --shadow-color: var(--foreground);
+            --step-color: #f7c72f;
+            display: none;
+            position: relative;
+            width: 100%;
+            height: 100dvh;
+            overflow: hidden;
+            padding: 14px 16px 90px;
+            background: #f5f0e3;
+            isolation: isolate;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        .slide::before,
+        .slide::after {
+            content: none;
+        }
+
+        .slide-card {
+            position: relative;
+            z-index: 1;
+            width: min(1220px, 100%);
+            height: 100%;
+            margin: 0 auto;
+            border: 2px solid var(--foreground);
+            border-radius: 22px;
+            background: var(--card-bg);
+            background-image: radial-gradient(var(--dot-color) 1.05px, transparent 1.05px);
+            background-size: 14px 14px;
+            box-shadow: var(--shadow-x) var(--shadow-y) 0 0 var(--shadow-color);
+            padding: clamp(14px, 1.5vw, 22px) clamp(18px, 2.2vw, 34px) clamp(20px, 2.4vw, 32px);
+            overflow: auto;
+            transform: rotate(-0.35deg);
+        }
+
+        .slide:nth-of-type(even) .slide-card {
+            transform: rotate(0.35deg);
+        }
+
+        .slide h3 {
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            margin: 0 0 8px;
+            padding-right: 92px;
+            font-size: clamp(30px, 3.4vw, 52px);
+            line-height: 1.1;
+            font-weight: 850;
+            letter-spacing: 0;
+            color: var(--heading);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            position: absolute;
+            right: 14px;
+            top: 12px;
+            border: 2px solid var(--foreground);
+            border-radius: 999px;
+            background: var(--step-color);
+            color: var(--foreground);
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: clamp(10px, 0.92vw, 12px);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            padding: 5px 10px;
+            margin: 0;
+            box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.25);
+            min-width: 58px;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .slide p {
+            margin: 10px 0;
+            color: var(--bodytext);
+            font-size: clamp(19px, 1.5vw, 24px);
+        }
+
+        .lead {
+            margin: 0 0 12px;
+            padding: 10px 12px;
+            border: 2px solid var(--foreground);
+            border-radius: 12px;
+            background: color-mix(in srgb, var(--secondary) 82%, white 18%);
+            box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.18);
+            font-weight: 700;
+        }
+
+        .slide p strong {
+            background: var(--secondary);
+            border: 2px solid var(--foreground);
+            border-radius: 6px;
+            padding: 0 6px;
+            font-weight: 800;
+        }
+
+        .points {
+            margin: 10px 0 14px;
+            padding-left: 25px;
+            font-size: clamp(19px, 1.45vw, 23px);
+            line-height: 1.5;
+            color: var(--bodytext);
+        }
+
+        .points li {
+            margin: 8px 0;
+            padding: 6px 8px 6px 0;
+        }
+
+        .interview-answer {
+            margin: 10px 0 4px;
+            padding: 10px 12px;
+            border: 2px solid var(--foreground);
+            border-radius: 10px;
+            background: #fff;
+            color: #2f4264;
+            font-size: clamp(16px, 1.2vw, 20px);
+            font-weight: 700;
+            line-height: 1.45;
+            box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.14);
+        }
+
+        .pipeline-hero {
+            margin: 12px 0 14px;
+            padding: 14px;
+            border: 2px solid var(--foreground);
+            border-radius: 14px;
+            background: #fff9ea;
+            box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 0.18);
+        }
+
+        .pipeline-title {
+            margin: 0 0 10px;
+            font-size: clamp(16px, 1.15vw, 20px);
+            font-weight: 800;
+            color: #23598f;
+            text-align: center;
+            letter-spacing: 0;
+        }
+
+        .pipeline-flow {
+            display: grid;
+            grid-template-columns: minmax(110px, 1fr) auto minmax(220px, 1.8fr) auto minmax(210px, 1.6fr) auto minmax(110px, 1fr);
+            align-items: center;
+            gap: 9px;
+        }
+
+        .flow-node {
+            border: 2px solid var(--foreground);
+            border-radius: 12px;
+            padding: 14px 10px;
+            text-align: center;
+            font-weight: 800;
+            color: #fff;
+            min-height: 74px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(14px, 1vw, 17px);
+            line-height: 1.2;
+        }
+
+        .flow-node.source {
+            background: #1976b5;
+        }
+
+        .flow-node.result {
+            background: #1e9a83;
+        }
+
+        .flow-arrow {
+            font-size: clamp(20px, 2vw, 30px);
+            font-weight: 900;
+            color: #7a63f6;
+            line-height: 1;
+            text-align: center;
+            min-width: 36px;
+        }
+
+        .flow-ops {
+            border: 2px dashed #808080;
+            border-radius: 12px;
+            padding: 10px;
+            background: #fff;
+        }
+
+        .flow-ops.terminal {
+            border-style: solid;
+            border-color: #6b57d9;
+            background: #f4f1ff;
+        }
+
+        .flow-ops-label {
+            margin: 0 0 8px;
+            text-align: center;
+            font-weight: 800;
+            color: #2f2f2f;
+            font-size: clamp(13px, 0.95vw, 16px);
+        }
+
+        .flow-ops-list {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .flow-op {
+            border: 2px solid var(--foreground);
+            background: #ddd690;
+            color: #1f1f1f;
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: clamp(12px, 0.9vw, 14px);
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .flow-dots {
+            color: #1f1f1f;
+            font-size: clamp(17px, 1.2vw, 21px);
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .pipeline-notes {
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .pipeline-note {
+            margin: 0;
+            border: 2px solid #c6a44a;
+            background: #ffe576;
+            border-radius: 10px;
+            padding: 8px 10px;
+            color: #2f2f2f;
+            font-size: clamp(12px, 0.92vw, 14px);
+            font-weight: 700;
+            line-height: 1.35;
+            text-align: center;
+        }
+
+        .stream-visual {
+            margin: 12px 0;
+            padding: 10px 12px;
+            border: 2px solid #17335b;
+            border-radius: 12px;
+            background: #ecf7ff;
+            box-shadow: 4px 4px 0 0 rgba(23, 51, 91, 0.18);
+            overflow-x: auto;
+        }
+
+        .stream-visual .sv-track {
+            display: flex;
+            align-items: stretch;
+            gap: 8px;
+            min-width: 680px;
+        }
+
+        .stream-visual .sv-stage {
+            min-width: 160px;
+            flex: 1 1 0;
+            border: 2px solid #17335b;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #d9f0ff 0%, #cbe9fb 100%);
+            padding: 8px;
+        }
+
+        .stream-visual .sv-stage-title {
+            margin: 0 0 6px;
+            color: #114a79;
+            font-size: 13px;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .stream-visual .sv-items {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .stream-visual .sv-item {
+            border: 2px solid #17335b;
+            border-radius: 10px;
+            background: #ffffff;
+            color: #13274a;
+            padding: 4px 6px;
+            font-size: 13px;
+            font-weight: 800;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .stream-visual .sv-arrow {
+            align-self: center;
+            min-width: 20px;
+            color: #254c80;
+            font-size: 22px;
+            font-weight: 900;
+            line-height: 1;
+            text-align: center;
+        }
+
+        .stream-visual .sv-foot {
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .stream-visual .sv-op {
+            border: 2px solid #17335b;
+            border-radius: 999px;
+            background: #d6ebff;
+            color: #17335b;
+            padding: 3px 9px;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 11px;
+            font-weight: 800;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .stream-visual .sv-note {
+            margin: 7px 0 0;
+            color: #224a7a;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        pre {
+            position: relative;
+            margin: 14px 0 0;
+            padding: 44px 16px 16px;
+            border: 2px solid #1f2a41;
+            border-radius: 14px;
+            background: linear-gradient(180deg, #20293d 0%, #141c2d 100%);
+            color: var(--code-text);
+            overflow: auto;
+            font-size: clamp(15px, 1.2vw, 20px);
+            line-height: 1.5;
+            box-shadow: 0 6px 0 0 rgba(18, 23, 37, 0.55), 0 10px 22px rgba(20, 28, 45, 0.35);
+        }
+
+        pre::before {
+            content: "Java Example";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            padding-left: 76px;
+            background: linear-gradient(180deg, #2a3651 0%, #1f2a41 100%);
+            color: #dbe6ff;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #3a4868;
+        }
+
+        pre::after {
+            content: "";
+            position: absolute;
+            left: 14px;
+            top: 9px;
+            width: 44px;
+            height: 12px;
+            background: radial-gradient(circle at 6px 6px, #ff6b6b 5px, transparent 6px),
+            radial-gradient(circle at 22px 6px, #f6c636 5px, transparent 6px),
+            radial-gradient(circle at 38px 6px, #35d39a 5px, transparent 6px);
+        }
+
+        code {
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: clamp(16px, 1.2vw, 21px);
+            margin-top: 10px;
+            background: #fff;
+            border: 2px solid var(--foreground);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th, td {
+            border: 2px solid #d8d8d8;
+            padding: 12px 13px;
+            vertical-align: top;
+            text-align: left;
+        }
+
+        th {
+            background: var(--secondary);
+            border-color: var(--foreground);
+            font-weight: 800;
+        }
+
+        .cheatsheet {
+            margin-top: 10px;
+            border: 2px solid #cad4df;
+            border-radius: 12px;
+            background: #ffffff;
+            overflow: hidden;
+        }
+
+        .cheatsheet-header {
+            padding: 10px 14px;
+            color: #ffffff;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(18px, 1.5vw, 24px);
+            line-height: 1.2;
+            letter-spacing: 0;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .cheatsheet-grid {
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 0;
+        }
+
+        .cheatsheet-row {
+            display: contents;
+        }
+
+        .cheatsheet-cell {
+            padding: 10px 12px;
+            border-top: 1px solid #d9e1ea;
+            font-size: clamp(14px, 0.98vw, 18px);
+            line-height: 1.4;
+            color: #30445f;
+            background: #fff;
+        }
+
+        .cheatsheet-cell strong {
+            color: #1d3a5f;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-weight: 800;
+        }
+
+        .cheatsheet-cell code {
+            font-size: 0.95em;
+            color: #224466;
+        }
+
+        .cheatsheet-2col {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .cheat-mini {
+            border: 2px solid #ced8e3;
+            border-radius: 12px;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .cheat-mini h4 {
+            margin: 0;
+            padding: 8px 12px;
+            color: #fff;
+            font-size: clamp(14px, 1.02vw, 18px);
+            font-weight: 800;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+        }
+
+        .cheat-mini ul {
+            margin: 0;
+            padding: 10px 14px 12px 28px;
+            color: #2f4563;
+            font-size: clamp(13px, 0.92vw, 17px);
+            line-height: 1.4;
+        }
+
+        .theme-green .cheatsheet-header,
+        .theme-green .cheat-mini h4 {
+            background: #0f7f69;
+        }
+
+        .theme-blue .cheatsheet-header,
+        .theme-blue .cheat-mini h4 {
+            background: #166fb4;
+        }
+
+        .theme-purple .cheatsheet-header,
+        .theme-purple .cheat-mini h4 {
+            background: #8d58ad;
+        }
+
+        .theme-orange .cheatsheet-header,
+        .theme-orange .cheat-mini h4 {
+            background: #e98b23;
+        }
+
+        .theme-teal .cheatsheet-header,
+        .theme-teal .cheat-mini h4 {
+            background: #0f98b8;
+        }
+
+        .slide-card.compact-1 h3 {
+            font-size: clamp(25px, 2.7vw, 38px);
+            margin-bottom: 6px;
+            padding-right: 82px;
+        }
+
+        .slide-card.compact-1 .lead {
+            margin-bottom: 8px;
+            padding: 7px 10px;
+            font-size: clamp(15px, 1.05vw, 18px);
+        }
+
+        .slide-card.compact-1 p,
+        .slide-card.compact-1 .points {
+            font-size: clamp(16px, 1.18vw, 20px);
+        }
+
+        .slide-card.compact-1 .points {
+            margin: 6px 0 10px;
+        }
+
+        .slide-card.compact-1 .points li {
+            margin: 5px 0;
+            padding: 4px 6px 4px 0;
+        }
+
+        .slide-card.compact-1 pre {
+            margin-top: 10px;
+            padding: 38px 12px 12px;
+            font-size: clamp(13px, 0.98vw, 16px);
+            line-height: 1.42;
+        }
+
+        .slide-card.compact-1 pre::before {
+            height: 27px;
+            padding-left: 66px;
+            font-size: 10px;
+        }
+
+        .slide-card.compact-1 pre::after {
+            left: 11px;
+            top: 7px;
+            transform: scale(0.88);
+            transform-origin: left top;
+        }
+
+        .slide-card.compact-2 h3 {
+            font-size: clamp(22px, 2.35vw, 33px);
+            margin-bottom: 4px;
+            padding-right: 74px;
+        }
+
+        .slide-card.compact-2 .lead {
+            display: none;
+        }
+
+        .slide-card.compact-2 p,
+        .slide-card.compact-2 .points {
+            font-size: clamp(14px, 1vw, 18px);
+            line-height: 1.42;
+        }
+
+        .slide-card.compact-2 .points {
+            margin: 4px 0 8px;
+            padding-left: 20px;
+        }
+
+        .slide-card.compact-2 .points li {
+            margin: 3px 0;
+            padding: 2px 4px 2px 0;
+        }
+
+        .slide-card.compact-2 pre {
+            margin-top: 8px;
+            padding: 34px 10px 10px;
+            font-size: clamp(12px, 0.9vw, 14px);
+            line-height: 1.35;
+        }
+
+        .slide-card.compact-2 pre::before {
+            height: 24px;
+            padding-left: 60px;
+            font-size: 9px;
+        }
+
+        .slide-card.compact-2 pre::after {
+            left: 9px;
+            top: 6px;
+            transform: scale(0.76);
+            transform-origin: left top;
+        }
+
+        .slide-card.compact-2 table {
+            font-size: clamp(13px, 0.92vw, 16px);
+        }
+
+        .slide-card.compact-2 th,
+        .slide-card.compact-2 td {
+            padding: 8px 9px;
+        }
+
+        .slide-card.compact-3 h3 {
+            font-size: clamp(20px, 2.05vw, 28px);
+            padding-right: 68px;
+        }
+
+        .slide-card.compact-3 p,
+        .slide-card.compact-3 .points {
+            font-size: clamp(13px, 0.88vw, 16px);
+            line-height: 1.3;
+        }
+
+        .slide-card.compact-3 .points li {
+            margin: 2px 0;
+            padding: 1px 3px 1px 0;
+        }
+
+        .slide-card.compact-3 pre {
+            margin-top: 6px;
+            padding: 30px 8px 8px;
+            font-size: clamp(11px, 0.8vw, 13px);
+            line-height: 1.28;
+        }
+
+        .slide-card.compact-3 pre::before {
+            height: 22px;
+            padding-left: 54px;
+            font-size: 8px;
+        }
+
+        .slide-card.compact-3 pre::after {
+            left: 8px;
+            top: 5px;
+            transform: scale(0.66);
+            transform-origin: left top;
+        }
+
+        .deck-controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 8px;
+            align-items: center;
+            padding: 6px 10px;
+            border-top: 2px solid var(--foreground);
+            background: rgba(255, 253, 245, 0.95);
+            backdrop-filter: blur(6px);
+        }
+
+        .nav-btn {
+            border: 2px solid var(--foreground);
+            background: var(--card);
+            color: var(--foreground);
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            min-width: 88px;
+            box-shadow: 4px 4px 0 0 var(--foreground);
+            transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--secondary);
+            transform: translate(-1px, -1px);
+            box-shadow: 6px 6px 0 0 var(--foreground);
+        }
+
+        .nav-btn:active {
+            transform: translate(1px, 1px);
+            box-shadow: 2px 2px 0 0 var(--foreground);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .progress-area {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 8px;
+            align-items: center;
+            min-width: 0;
+            padding: 4px 8px;
+            border: 2px solid var(--foreground);
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .counter {
+            font-size: 12px;
+            color: #273549;
+            font-weight: 700;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        #slideRange {
+            width: 100%;
+            accent-color: var(--primary);
+            cursor: pointer;
+            margin: 0;
+            height: 18px;
+        }
+
+        .fullscreen-btn {
+            position: fixed;
+            top: 10px;
+            right: 12px;
+            z-index: 30;
+            width: 42px;
+            height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--foreground);
+            border-radius: 10px;
+            background: #fff;
+            color: var(--foreground);
+            cursor: pointer;
+            box-shadow: 3px 3px 0 0 var(--foreground);
+            transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+        }
+
+        .home-btn,
+        .home-btn:visited {
+            position: fixed;
+            top: 10px;
+            left: 12px;
+            z-index: 30;
+            min-height: 42px;
+            padding: 0 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--foreground);
+            border-radius: 10px;
+            background: #fff;
+            color: var(--foreground);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 800;
+            box-shadow: 3px 3px 0 0 var(--foreground);
+            transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+        }
+
+        .home-btn:hover {
+            background: var(--secondary);
+            transform: translate(-1px, -1px);
+            box-shadow: 5px 5px 0 0 var(--foreground);
+        }
+
+        .home-btn:active {
+            transform: translate(1px, 1px);
+            box-shadow: 2px 2px 0 0 var(--foreground);
+        }
+
+        .fullscreen-btn:hover {
+            background: var(--secondary);
+            transform: translate(-1px, -1px);
+            box-shadow: 5px 5px 0 0 var(--foreground);
+        }
+
+        .fullscreen-btn:active {
+            transform: translate(1px, 1px);
+            box-shadow: 2px 2px 0 0 var(--foreground);
+        }
+
+        .fullscreen-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            stroke-width: 2.3;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        body.is-fullscreen .fullscreen-icon-enter {
+            display: none;
+        }
+
+        body:not(.is-fullscreen) .fullscreen-icon-exit {
+            display: none;
+        }
+
+        @keyframes floatSlow {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(16px);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .slide {
+                padding: 12px 10px 92px;
+            }
+
+            .slide-card {
+                border-radius: 18px;
+                box-shadow: 6px 6px 0 0 var(--foreground);
+            }
+
+            .slide h3 {
+                font-size: clamp(26px, 5.2vw, 40px);
+                padding-right: 72px;
+            }
+
+            .slide p,
+            .points {
+                font-size: clamp(17px, 3.7vw, 22px);
+            }
+
+            .pipeline-flow {
+                grid-template-columns: 1fr;
+                gap: 7px;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+
+            .pipeline-notes {
+                grid-template-columns: 1fr;
+            }
+
+            .stream-visual .sv-track {
+                min-width: 560px;
+            }
+
+            pre {
+                font-size: clamp(14px, 3.1vw, 18px);
+            }
+        }
+
+        @media (max-width: 700px) {
+            .deck-controls {
+                grid-template-columns: 1fr 1fr;
+                grid-template-areas:
+          "progress progress"
+          "prev next";
+            }
+
+            .progress-area {
+                grid-area: progress;
+            }
+
+            #prevBtn {
+                grid-area: prev;
+            }
+
+            #nextBtn {
+                grid-area: next;
+            }
+
+            .nav-btn {
+                min-width: 0;
+                width: 100%;
+            }
+
+            .progress-area {
+                grid-template-columns: 1fr;
+                gap: 4px;
+                padding: 5px 8px;
+            }
+
+            .counter {
+                text-align: center;
+            }
+
+            .badge {
+                right: 10px;
+                top: 10px;
+                min-width: 52px;
+            }
+        }
+    </style>
+</head>
+<body>
+<main class="container">
+    <header>
+        <h1>Section 26: Streams API</h1>
+        <p class="sub">Slide-by-slide student guide based on the source deck, with branding removed and teaching notes
+            added.</p>
+    </header>
+
+    <nav>
+        <h2>Quick Navigation</h2>
+        <ol class="toc">
+            <li><a href="#s1">Slide 1 - Lesson 18: Java Streams</a></li>
+            <li><a href="#s2">Slide 2 - Interview Questions (Medium)</a></li>
+            <li><a href="#s3">Slide 3 - Streams from Arrays and Infinite Sources</a></li>
+            <li><a href="#s4">Slide 4 - Streams Have No Storage</a></li>
+            <li><a href="#s5">Slide 5 - Stream Pipeline</a></li>
+            <li><a href="#s6">Slide 6 - map() Basics</a></li>
+            <li><a href="#s7">Slide 7 - map() Characteristics</a></li>
+            <li><a href="#s8">Slide 8 - flatMap() Overview</a></li>
+            <li><a href="#s9">Slide 9 - flatMap() Person/Phone Example</a></li>
+            <li><a href="#s10">Slide 10 - filter()</a></li>
+            <li><a href="#s11">Slide 11 - limit()</a></li>
+            <li><a href="#s12">Slide 12 - skip()</a></li>
+            <li><a href="#s13">Slide 13 - Streams Traversed Once</a></li>
+            <li><a href="#s14">Slide 14 - reduce() Concept</a></li>
+            <li><a href="#s15">Slide 15 - reduce() Examples</a></li>
+            <li><a href="#s16">Slide 16 - collect() Basics</a></li>
+            <li><a href="#s17">Slide 17 - Collector Utilities</a></li>
+            <li><a href="#s18">Slide 18 - collectingAndThen()</a></li>
+            <li><a href="#s19">Slide 19 - groupingBy()</a></li>
+            <li><a href="#s20">Slide 20 - partitioningBy()</a></li>
+            <li><a href="#s21">Slide 21 - Find and Match Methods</a></li>
+            <li><a href="#s22">Slide 22 - Match Example</a></li>
+            <li><a href="#s23">Slide 23 - Find Example</a></li>
+            <li><a href="#s24">Slide 24 - Chaining Operations</a></li>
+            <li><a href="#s25">Slide 25 - Pipeline Step by Step</a></li>
+            <li><a href="#s26">Slide 26 - parallelStream()</a></li>
+            <li><a href="#s26a">Slide 26A - Parallel Stream Timing Demo</a></li>
+            <li><a href="#s27">Slide 27 - Switching to Parallel</a></li>
+            <li><a href="#s28">Slide 28 - Collections vs Streams</a></li>
+            <li><a href="#s29">Slide 29 - Practice: Word Frequency</a></li>
+            <li><a href="#s30">Slide 30 - Practice: First Unique Character</a></li>
+            <li><a href="#s31">Slide 31 - Practice: Top Customers</a></li>
+            <li><a href="#s32">Slide 32 - Cheat Sheet: Creating Streams</a></li>
+            <li><a href="#s33">Slide 33 - Cheat Sheet: Intermediate Ops</a></li>
+            <li><a href="#s34">Slide 34 - Cheat Sheet: Terminal Ops</a></li>
+            <li><a href="#s35">Slide 35 - Cheat Sheet: Collectors</a></li>
+            <li><a href="#s36">Slide 36 - Cheat Sheet: Use Cases</a></li>
+        </ol>
+    </nav>
+
+    <section class="slide" id="s1">
+        <span class="badge">Slide 1</span>
+        <h3>Lesson 18 - Java Streams</h3>
+        <div class="pipeline-hero">
+            <p class="pipeline-title">Stream Pipeline Overview</p>
+            <div class="pipeline-flow">
+                <div class="flow-node source">Stream<br>Source</div>
+                <div class="flow-arrow">-&gt;</div>
+                <div class="flow-ops">
+                    <p class="flow-ops-label">Intermediate Operations</p>
+                    <div class="flow-ops-list">
+                        <span class="flow-op">filter()</span>
+                        <span class="flow-op">map()</span>
+                        <span class="flow-dots">...</span>
+                        <span class="flow-op">sorted()</span>
+                    </div>
+                </div>
+                <div class="flow-arrow">-&gt;</div>
+                <div class="flow-ops">
+                    <p class="flow-ops-label">Terminal Operation</p>
+                    <div class="flow-ops-list">
+                        <span class="flow-op">collect()</span>
+                        <span class="flow-op">reduce()</span>
+                        <span class="flow-op">findFirst()</span>
+                    </div>
+                </div>
+                <div class="flow-arrow">-&gt;</div>
+                <div class="flow-node result">Operation<br>Result</div>
+            </div>
+            <div class="pipeline-notes">
+                <p class="pipeline-note">Array, collection, I/O channel, generator</p>
+                <p class="pipeline-note">Filtering, mapping, sorting in chain style</p>
+                <p class="pipeline-note">Pipeline execution starts at terminal call</p>
+                <p class="pipeline-note">Collected value, Optional, number, or final side effect</p>
+            </div>
+        </div>
+        <ul class="points">
+            <li>Collections store data, streams define how data is processed.</li>
+            <li>Intermediate operations are lazy and run only with a terminal operation.</li>
+            <li>This model makes business transformations cleaner and easier to maintain.</li>
+        </ul>
+    </section>
+
+    <section class="slide" id="s2">
+        <span class="badge">Slide 2</span>
+        <h3>10 Interview Questions (Previous Lessons)</h3>
+        <ol class="points">
+            <li>
+                What is the practical difference between <code>HashMap</code> and <code>LinkedHashMap</code>, and when would you choose each?
+                <p class="interview-answer">Use <code>HashMap</code> when order is irrelevant and fast average lookup is the goal. Use <code>LinkedHashMap</code> when insertion/access order must be preserved (for example predictable iteration or simple LRU behavior).</p>
+            </li>
+            <li>
+                Explain checked vs unchecked exceptions. In a service layer, where should each typically be handled?
+                <p class="interview-answer">Checked exceptions model recoverable integration failures and are usually translated at boundaries. Unchecked exceptions model programming/domain violations and are usually handled by centralized global exception handling.</p>
+            </li>
+            <li>
+                Why are <code>equals()</code> and <code>hashCode()</code> critical for <code>HashSet</code>/<code>HashMap</code>? What bugs appear if the contract is broken?
+                <p class="interview-answer">Hash collections use <code>hashCode()</code> for bucket selection and <code>equals()</code> for equality confirmation. Broken contracts cause missing keys, duplicate set items, and inconsistent remove/find behavior.</p>
+            </li>
+            <li>
+                What is the difference between <code>Comparable</code> and <code>Comparator</code>? Give one real sorting scenario for each.
+                <p class="interview-answer"><code>Comparable</code> defines natural order in the class itself (e.g., user by id). <code>Comparator</code> defines external or context-specific order (e.g., same users by lastLogin desc in admin dashboard).</p>
+            </li>
+            <li>
+                Compare <code>ArrayList</code> and <code>LinkedList</code> in terms of <code>get</code>, append, and middle remove complexity.
+                <p class="interview-answer"><code>ArrayList</code> has O(1) random access and amortized O(1) append but costly middle remove due to shifts. <code>LinkedList</code> has O(n) access; insert/remove is cheap after traversal, but traversal cost often dominates.</p>
+            </li>
+            <li>
+                When do you prefer an interface over an abstract class in Java API design?
+                <p class="interview-answer">Prefer interface for capability contracts and multiple independent implementations. Prefer abstract class when you need shared state, protected helpers, and partial base behavior across subclasses.</p>
+            </li>
+            <li>
+                Explain wildcard usage: <code>&lt;? extends T&gt;</code> vs <code>&lt;? super T&gt;</code> with a producer/consumer example.
+                <p class="interview-answer">Use <code>? extends T</code> when reading from a producer collection, and <code>? super T</code> when writing to a consumer collection. PECS rule: Producer Extends, Consumer Super.</p>
+            </li>
+            <li>
+                What is the difference between method overloading, method overriding, and static method hiding?
+                <p class="interview-answer">Overloading changes signature in same class (compile-time resolution). Overriding changes inherited behavior polymorphically (runtime dispatch). Static hiding shadows parent static method based on reference type, not object type.</p>
+            </li>
+            <li>
+                Why does immutability reduce concurrency bugs? Name two immutable structures commonly used in Java.
+                <p class="interview-answer">Immutable objects remove shared mutable state, reducing race conditions and synchronization needs. Common examples: <code>String</code> and immutable DTO/record types (or <code>List.of(...)</code> snapshots).</p>
+            </li>
+            <li>
+                What makes a functional interface valid, and when is a method reference better than a lambda?
+                <p class="interview-answer">A functional interface has exactly one abstract method (default/static methods allowed). Method reference is preferable when it expresses identical behavior with better readability, e.g., <code>String::trim</code>.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section class="slide" id="s3">
+        <span class="badge">Slide 3</span>
+        <h3>Streams from Arrays, Empty, Generators</h3>
+        <ul class="points">
+            <li><code>Arrays.stream(array)</code> is the cleanest way to process arrays with stream operations.</li>
+            <li><code>Arrays.stream(array, from, to)</code> is useful for slicing windows (for example, top 100
+                records).
+            </li>
+            <li><code>Stream.empty()</code> is perfect for safe defaults in APIs instead of <code>null</code>.</li>
+            <li><code>Stream.generate(...)</code> and <code>Stream.iterate(...)</code> create infinite streams; always
+                guard with <code>limit()</code>.
+            </li>
+        </ul>
+        <pre><code class="language-java">String[] words = {"Java", "Stream", "API"};
+Stream&lt;String&gt; streamOfWords = Arrays.stream(words);
+
+Stream&lt;String&gt; emptyStream = Stream.empty();
+
+Stream.generate(Math::random)
+      .limit(5)
+      .forEach(System.out::println);
+
+Stream.iterate(1, n -&gt; n + 1)
+      .limit(5)
+      .forEach(System.out::println);</code></pre>
+    </section>
+
+    <section class="slide" id="s4">
+        <span class="badge">Slide 4</span>
+        <h3>Streams Have No Storage</h3>
+        <ul class="points">
+            <li>Collections are in-memory containers; all elements exist there.</li>
+            <li>Streams are computation views over a source, evaluated when needed.</li>
+            <li><strong>Intermediate operations</strong> (for example <code>filter</code>, <code>map</code>, <code>sorted</code>)
+                return another stream and stay lazy.
+            </li>
+            <li><strong>Terminal operations</strong> (for example <code>collect</code>, <code>forEach</code>, <code>count</code>,
+                <code>reduce</code>) trigger actual execution and produce a final result.
+            </li>
+            <li>This design reduces unnecessary work and can improve performance on large datasets.</li>
+        </ul>
+        <pre><code class="language-java">List&lt;String&gt; result = departments.stream()
+    .filter(d -&gt; d.startsWith("S"))   // intermediate
+    .map(String::toUpperCase)         // intermediate
+    .collect(Collectors.toList());    // terminal (executes pipeline)</code></pre>
+        <p><strong>Key takeaway:</strong> Stream pipelines are execution plans, not data structures.</p>
+    </section>
+
+    <section class="slide" id="s5">
+        <span class="badge">Slide 5</span>
+        <h3>Stream Pipeline: The Standard Execution Model</h3>
+        <ul class="points">
+            <li>Stage 1 - Source: list, set, array, generator, file lines, etc.</li>
+            <li>Stage 2 - Intermediate operations: <code>filter</code>, <code>map</code>, <code>sorted</code>, <code>distinct</code>.
+            </li>
+            <li>Stage 3 - Terminal operation: <code>collect</code>, <code>reduce</code>, <code>count</code>, <code>findFirst</code>.
+            </li>
+            <li>Only one terminal operation per pipeline run.</li>
+        </ul>
+        <p><strong>Key takeaway:</strong> This model maps directly to business flows such as “filter valid orders,
+            transform DTOs, collect response”.</p>
+    </section>
+
+    <section class="slide" id="s6">
+        <span class="badge">Slide 6</span>
+        <h3>Streams <code>map()</code> Method (Intermediate Operation)</h3>
+        <ul class="points">
+            <li>Use <code>map()</code> when one input element should become one output element.</li>
+            <li>Typical usage: entity to DTO, lowercase to uppercase, cents to dollars, timestamp to formatted date.
+            </li>
+            <li><code>map()</code> is pure transformation; avoid side effects inside it.</li>
+        </ul>
+        <div class="stream-visual" role="img" aria-label="map operation visual flow from list to uppercase output">
+            <div class="sv-track">
+                <div class="sv-stage">
+                    <p class="sv-stage-title">List&lt;String&gt;</p>
+                    <div class="sv-items">
+                        <span class="sv-item">Supply</span>
+                        <span class="sv-item">HR</span>
+                        <span class="sv-item">Sales</span>
+                        <span class="sv-item">Marketing</span>
+                    </div>
+                </div>
+                <span class="sv-arrow">-&gt;</span>
+                <div class="sv-stage">
+                    <p class="sv-stage-title">Stream&lt;String&gt;</p>
+                    <div class="sv-items">
+                        <span class="sv-item">Supply</span>
+                        <span class="sv-item">HR</span>
+                        <span class="sv-item">Sales</span>
+                        <span class="sv-item">Marketing</span>
+                    </div>
+                </div>
+                <span class="sv-arrow">-&gt;</span>
+                <div class="sv-stage">
+                    <p class="sv-stage-title">Mapped Stream</p>
+                    <div class="sv-items">
+                        <span class="sv-item">SUPPLY</span>
+                        <span class="sv-item">HR</span>
+                        <span class="sv-item">SALES</span>
+                        <span class="sv-item">MARKETING</span>
+                    </div>
+                </div>
+                <span class="sv-arrow">-&gt;</span>
+                <div class="sv-stage">
+                    <p class="sv-stage-title">Output</p>
+                    <div class="sv-items">
+                        <span class="sv-item">SUPPLY</span>
+                        <span class="sv-item">HR</span>
+                        <span class="sv-item">SALES</span>
+                        <span class="sv-item">MARKETING</span>
+                    </div>
+                </div>
+            </div>
+            <div class="sv-foot">
+                <span class="sv-op">.stream()</span>
+                <span class="sv-op">.map(String::toUpperCase)</span>
+                <span class="sv-op">.forEach(System.out::println)</span>
+            </div>
+        </div>
+        <pre><code class="language-java">List&lt;String&gt; departmentList = Arrays.asList("Supply", "HR", "Sales", "Marketing");
+
+departmentList.stream()
+              .map(String::toUpperCase)
+              .forEach(System.out::println);</code></pre>
+    </section>
+
+    <section class="slide" id="s7">
+        <span class="badge">Slide 7</span>
+        <h3><code>map()</code> Characteristics</h3>
+        <ul class="points">
+            <li><code>map(Function)</code> is intermediate and lazy, so it does nothing until terminal execution.</li>
+            <li>It returns a new stream, preserving immutability of the source collection.</li>
+            <li>Pipeline readability improves when each transformation has one clear purpose.</li>
+        </ul>
+        <p><strong>Key takeaway:</strong> Small, focused map operations are easier to debug and test than one large
+            transformation block.</p>
+    </section>
+
+    <section class="slide" id="s8">
+        <span class="badge">Slide 8</span>
+        <h3>Streams <code>flatMap()</code> Method (Intermediate Operation)</h3>
+        <ul class="points">
+            <li>Use <code>flatMap()</code> for one-to-many mappings (one input, many outputs).</li>
+            <li><code>map()</code> creates nested structures; <code>flatMap()</code> flattens to one continuous stream.
+            </li>
+            <li>Common scenarios: users to roles, orders to line items, departments to employees.</li>
+        </ul>
+        <div class="stream-visual" role="img"
+             aria-label="flatMap visual from words to nested letters then flattened output">
+            <div class="sv-track">
+                <div class="sv-stage">
+                    <p class="sv-stage-title">Input Words</p>
+                    <div class="sv-items">
+                        <span class="sv-item">Java</span>
+                        <span class="sv-item">Stream</span>
+                    </div>
+                </div>
+                <span class="sv-arrow">-&gt;</span>
+                <div class="sv-stage">
+                    <p class="sv-stage-title">Nested (map split)</p>
+                    <div class="sv-items">
+                        <span class="sv-item">[J, a, v, a]</span>
+                        <span class="sv-item">[S, t, r, e, a, m]</span>
+                    </div>
+                </div>
+                <span class="sv-arrow">-&gt;</span>
+                <div class="sv-stage">
+                    <p class="sv-stage-title">Flattened Stream</p>
+                    <div class="sv-items">
+                        <span class="sv-item">J, a, v, a, S, t, r, e, a, m</span>
+                    </div>
+                </div>
+            </div>
+            <div class="sv-foot">
+                <span class="sv-op">Arrays.stream(words)</span>
+                <span class="sv-op">.flatMap(word -&gt; Arrays.stream(word.split("")))</span>
+                <span class="sv-op">.forEach(System.out::println)</span>
+            </div>
+            <p class="sv-note"><code>flatMap()</code> removes one nesting level and gives one continuous stream.</p>
+        </div>
+        <pre><code class="language-java">String[] words = {"Java", "Stream"};
+
+Stream&lt;String&gt; letters = Arrays.stream(words)
+    .flatMap(word -&gt; Arrays.stream(word.split("")));
+
+letters.forEach(System.out::println);</code></pre>
+    </section>
+
+    <section class="slide" id="s9">
+        <span class="badge">Slide 9</span>
+        <h3><code>flatMap()</code> with Person and Phone Numbers</h3>
+        <ul class="points">
+            <li><code>map(Person::getPhoneNumbers)</code> returns nested output
+                (<code>List&lt;List&lt;String&gt;&gt;</code>).
+            </li>
+            <li><code>flatMap(...)</code> returns a single list of all numbers (<code>List&lt;String&gt;</code>).</li>
+            <li>Practical example: build one contact list for SMS notifications across all customers.</li>
+        </ul>
+        <pre><code class="language-java">List&lt;List&lt;String&gt;&gt; mapResult = persons.stream()
+    .map(Person::getPhoneNumbers)
+    .collect(Collectors.toList());
+
+List&lt;String&gt; flatMapResult = persons.stream()
+    .flatMap(person -&gt; person.getPhoneNumbers().stream())
+    .collect(Collectors.toList());</code></pre>
+    </section>
+
+    <section class="slide" id="s10">
+        <span class="badge">Slide 10</span>
+        <h3>Streams <code>filter()</code> Method (Intermediate Operation)</h3>
+        <ul class="points">
+            <li><code>filter()</code> keeps elements that satisfy a boolean rule.</li>
+            <li>Common use cases: active users only, paid invoices only, high-priority incidents only.</li>
+            <li><code>filter(Predicate&lt;T&gt;)</code> is intermediate and lazy.</li>
+        </ul>
+        <div class="stream-visual" role="img" aria-label="filter operation visual flow with startsWith S rule">
+            <div class="sv-track">
+                <div class="sv-stage">
+                    <p class="sv-stage-title">Input List</p>
+                    <div class="sv-items">
+                        <span class="sv-item">Supply</span>
+                        <span class="sv-item">HR</span>
+                        <span class="sv-item">Sales</span>
+                        <span class="sv-item">Marketing</span>
+                    </div>
+                </div>
+                <span class="sv-arrow">-&gt;</span>
+                <div class="sv-stage">
+                    <p class="sv-stage-title">After filter()</p>
+                    <div class="sv-items">
+                        <span class="sv-item">Supply</span>
+                        <span class="sv-item">Sales</span>
+                    </div>
+                </div>
+                <span class="sv-arrow">-&gt;</span>
+                <div class="sv-stage">
+                    <p class="sv-stage-title">Output</p>
+                    <div class="sv-items">
+                        <span class="sv-item">Supply</span>
+                        <span class="sv-item">Sales</span>
+                    </div>
+                </div>
+            </div>
+            <div class="sv-foot">
+                <span class="sv-op">.stream()</span>
+                <span class="sv-op">.filter(word -&gt; word.startsWith("S"))</span>
+                <span class="sv-op">.forEach(System.out::println)</span>
+            </div>
+            <p class="sv-note">Only elements that satisfy the predicate continue in the pipeline.</p>
+        </div>
+        <pre><code class="language-java">List&lt;String&gt; departmentList = Arrays.asList("Supply", "HR", "Sales", "Marketing");
+
+departmentList.stream()
+              .filter(word -&gt; word.startsWith("S"))
+              .forEach(System.out::println);</code></pre>
+    </section>
+
+    <section class="slide" id="s11">
+        <span class="badge">Slide 11</span>
+        <h3>Streams <code>limit()</code> Method (Intermediate Operation)</h3>
+        <ul class="points">
+            <li><code>limit(n)</code> restricts output to the first <code>n</code> elements.</li>
+            <li>It is mandatory when working with infinite streams.</li>
+            <li>In APIs, <code>limit()</code> is often used for previews, dashboards, and pagination windows.</li>
+            <li>On unordered sources, the “first n” concept depends on source behavior.</li>
+        </ul>
+        <pre><code class="language-java">Stream.generate(() -&gt; new Random().nextInt(100))
+      .limit(10)
+      .forEach(System.out::println);</code></pre>
+    </section>
+
+    <section class="slide" id="s12">
+        <span class="badge">Slide 12</span>
+        <h3>Streams <code>skip()</code> Method (Intermediate Operation)</h3>
+        <ul class="points">
+            <li><code>skip(n)</code> discards the first <code>n</code> items and continues with the rest.</li>
+            <li>If stream size is smaller than <code>n</code>, the result is empty.</li>
+            <li><code>skip</code> + <code>limit</code> is a clean foundation for page-based slicing.</li>
+        </ul>
+        <pre><code class="language-java">Stream.iterate(1, n -&gt; n + 1)
+      .skip(5)
+      .limit(5)
+      .forEach(System.out::println); // 6, 7, 8, 9, 10</code></pre>
+    </section>
+
+    <section class="slide" id="s13">
+        <span class="badge">Slide 13</span>
+        <h3>Streams Are Traversable Only Once</h3>
+        <ul class="points">
+            <li>Streams are one-shot: after terminal execution, the stream is closed.</li>
+            <li>Reusing the same stream instance triggers <code>IllegalStateException</code>.</li>
+            <li>If you need another pass, rebuild the stream from the original source.</li>
+        </ul>
+        <pre><code class="language-java">Stream&lt;String&gt; depStream = departmentList.stream();
+depStream.forEach(System.out::println);
+depStream.forEach(System.out::println); // IllegalStateException</code></pre>
+    </section>
+
+    <section class="slide" id="s14">
+        <span class="badge">Slide 14</span>
+        <h3>Streams <code>reduce()</code> Method (Terminal Operation) - Concept</h3>
+        <ul class="points">
+            <li><code>reduce</code> folds many values into one final result.</li>
+            <li>It uses an identity (seed) and an accumulator function.</li>
+            <li>If stream is empty, identity becomes the result.</li>
+            <li>Great for totals, score aggregation, merging summaries, and composite object creation.</li>
+            <li>Numeric stream types expose optimized methods like <code>sum()</code>, <code>average()</code>, and
+                <code>max()</code>.
+            </li>
+        </ul>
+        <p><strong>Key takeaway:</strong> Think of reduce as controlled accumulation with explicit business rules.</p>
+    </section>
+
+    <section class="slide" id="s15">
+        <span class="badge">Slide 15</span>
+        <h3>Streams <code>reduce()</code> Method (Terminal Operation) - Examples</h3>
+        <ul class="points">
+            <li>First example: integer aggregation (<code>1+2+3+4+5</code>).</li>
+            <li>Second example: sum all person incomes for a reporting metric.</li>
+            <li>Same pattern scales to discounts, taxes, risk scores, and KPI totals.</li>
+        </ul>
+        <div class="stream-visual" role="img" aria-label="reduce operation visual accumulation from numbers to total">
+            <div class="sv-track">
+                <div class="sv-stage">
+                    <p class="sv-stage-title">Input Numbers</p>
+                    <div class="sv-items">
+                        <span class="sv-item">1</span>
+                        <span class="sv-item">2</span>
+                        <span class="sv-item">3</span>
+                        <span class="sv-item">4</span>
+                        <span class="sv-item">5</span>
+                    </div>
+                </div>
+                <span class="sv-arrow">-&gt;</span>
+                <div class="sv-stage">
+                    <p class="sv-stage-title">Accumulator Steps</p>
+                    <div class="sv-items">
+                        <span class="sv-item">0 + 1 = 1</span>
+                        <span class="sv-item">1 + 2 = 3</span>
+                        <span class="sv-item">3 + 3 = 6</span>
+                        <span class="sv-item">6 + 4 = 10</span>
+                        <span class="sv-item">10 + 5 = 15</span>
+                    </div>
+                </div>
+                <span class="sv-arrow">-&gt;</span>
+                <div class="sv-stage">
+                    <p class="sv-stage-title">Final Result</p>
+                    <div class="sv-items">
+                        <span class="sv-item">sum = 15</span>
+                    </div>
+                </div>
+            </div>
+            <div class="sv-foot">
+                <span class="sv-op">.reduce(0, Integer::sum)</span>
+            </div>
+        </div>
+        <pre><code class="language-java">List&lt;Integer&gt; numbers = List.of(1, 2, 3, 4, 5);
+int sum = numbers.stream().reduce(0, Integer::sum);
+System.out.println(sum); // 15
+
+double incomeSum = persons.stream()
+    .map(Person::getIncome)
+    .reduce(0.0, Double::sum);
+System.out.println(incomeSum);</code></pre>
+    </section>
+
+    <section class="slide" id="s16">
+        <span class="badge">Slide 16</span>
+        <h3>Streams <code>collect()</code> Method (Terminal Operation) - Basics</h3>
+        <ul class="points">
+            <li><code>collect()</code> materializes stream results into useful structures.</li>
+            <li><code>Collectors</code> provides production-ready collectors for common patterns.</li>
+            <li>Use <code>toList()</code>, <code>toSet()</code>, <code>toMap()</code>, and custom collectors as needed.
+            </li>
+            <li>This is typically the final step before returning data from services/controllers.</li>
+        </ul>
+        <div class="stream-visual" role="img" aria-label="collect operation visual from filtered stream to list">
+            <div class="sv-track">
+                <div class="sv-stage">
+                    <p class="sv-stage-title">Input List</p>
+                    <div class="sv-items">
+                        <span class="sv-item">Supply</span>
+                        <span class="sv-item">HR</span>
+                        <span class="sv-item">Sales</span>
+                        <span class="sv-item">Marketing</span>
+                    </div>
+                </div>
+                <span class="sv-arrow">-&gt;</span>
+                <div class="sv-stage">
+                    <p class="sv-stage-title">Filtered Stream</p>
+                    <div class="sv-items">
+                        <span class="sv-item">Supply</span>
+                        <span class="sv-item">Sales</span>
+                    </div>
+                </div>
+                <span class="sv-arrow">-&gt;</span>
+                <div class="sv-stage">
+                    <p class="sv-stage-title">Collected List</p>
+                    <div class="sv-items">
+                        <span class="sv-item">[Supply, Sales]</span>
+                    </div>
+                </div>
+            </div>
+            <div class="sv-foot">
+                <span class="sv-op">.filter(word -&gt; word.startsWith("S"))</span>
+                <span class="sv-op">.collect(Collectors.toList())</span>
+            </div>
+            <p class="sv-note"><code>collect()</code> converts the stream pipeline into a reusable data structure.</p>
+        </div>
+        <pre><code class="language-java">List&lt;String&gt; newDepartmentList = departmentList.stream()
+    .filter(word -&gt; word.startsWith("S"))
+    .collect(Collectors.toList());
+
+newDepartmentList.forEach(System.out::println);</code></pre>
+    </section>
+
+    <section class="slide" id="s17">
+        <span class="badge">Slide 17</span>
+        <h3>More Collector Methods</h3>
+        <ul class="points">
+            <li><code>joining()</code> builds readable strings for logs and response summaries.</li>
+            <li><code>counting()</code>, <code>minBy()</code>, <code>maxBy()</code> support lightweight analytics.</li>
+            <li><code>toMap()</code> is powerful but requires conflict strategy when keys can duplicate.</li>
+        </ul>
+        <pre><code class="language-java">List&lt;String&gt; personNames = persons.stream()
+    .map(Person::getName)
+    .collect(Collectors.toList());
+
+// Other important collectors:
+// toSet(), toCollection(), toMap()
+// counting(), joining(), minBy(), maxBy(), reducing()</code></pre>
+    </section>
+
+    <section class="slide" id="s18">
+        <span class="badge">Slide 18</span>
+        <h3>Streams <code>collectingAndThen()</code> Method (Terminal Operation)</h3>
+        <ul class="points">
+            <li>Run one collector first, then transform that collector output in a finishing step.</li>
+            <li>Pattern: <code>collectingAndThen(downstreamCollector, finisher)</code>.</li>
+            <li>Useful when you want a polished final value (for example Optional to plain String).</li>
+        </ul>
+        <pre><code class="language-java">String maxPriceProduct = productList.stream()
+    .collect(Collectors.collectingAndThen(
+        Collectors.maxBy(Comparator.comparing(Product::getPrice)),
+        optionalProduct -&gt; optionalProduct.map(Product::getName).orElse("None")
+    ));
+
+System.out.println("The product with max price tag is: " + maxPriceProduct);</code></pre>
+    </section>
+
+    <section class="slide" id="s19">
+        <span class="badge">Slide 19</span>
+        <h3>Streams <code>groupingBy()</code> Method (Terminal Operation)</h3>
+        <ul class="points">
+            <li>Groups elements by a classification key and returns a <code>Map&lt;K, List&lt;T&gt;&gt;</code>.</li>
+            <li>Equivalent mindset to SQL <code>GROUP BY</code>.</li>
+            <li>Ideal for reporting dashboards (for example products grouped by price band/category).</li>
+        </ul>
+        <pre><code class="language-java">Map&lt;Integer, List&lt;Product&gt;&gt; groupByPriceMap = productList.stream()
+    .collect(Collectors.groupingBy(Product::getPrice));
+
+System.out.println(groupByPriceMap);</code></pre>
+    </section>
+
+    <section class="slide" id="s20">
+        <span class="badge">Slide 20</span>
+        <h3>Streams <code>partitioningBy()</code> Method (Terminal Operation)</h3>
+        <ul class="points">
+            <li>Splits data into exactly two buckets using a predicate: <code>true</code> and <code>false</code>.</li>
+            <li>Returns <code>Map&lt;Boolean, List&lt;T&gt;&gt;</code> so both sides are available at once.</li>
+            <li>Great for “eligible vs not eligible”, “premium vs regular”, “pass vs fail” use cases.</li>
+        </ul>
+        <pre><code class="language-java">Map&lt;Boolean, List&lt;Product&gt;&gt; products = productList.stream()
+    .collect(Collectors.partitioningBy(product -&gt; product.getPrice() &gt; 1000));
+
+System.out.println(products);</code></pre>
+    </section>
+
+    <section class="slide" id="s21">
+        <span class="badge">Slide 21</span>
+        <h3>Finding and Matching Methods in Streams</h3>
+        <ul class="points">
+            <li>Core operations: <code>allMatch</code>, <code>anyMatch</code>, <code>noneMatch</code>,
+                <code>findAny</code>, <code>findFirst</code>.
+            </li>
+            <li>All are terminal operations and can stop early (short-circuit behavior).</li>
+            <li>This makes them efficient for validation gates and quick checks.</li>
+            <li><code>findAny</code>/<code>findFirst</code> return <code>Optional&lt;T&gt;</code> to model “might be
+                absent”.
+            </li>
+        </ul>
+    </section>
+
+    <section class="slide" id="s22">
+        <span class="badge">Slide 22</span>
+        <h3>Find and Match Example - Part 1</h3>
+        <ul class="points">
+            <li><code>allMatch</code> checks whether every item satisfies inventory availability.</li>
+            <li><code>anyMatch</code> checks whether at least one item is on sale.</li>
+            <li>These checks are common in checkout preconditions and campaign logic.</li>
+        </ul>
+        <pre><code class="language-java">boolean allInStock = items.stream().allMatch(Item::isInStock);
+System.out.println(allInStock);
+
+boolean anyOnSale = items.stream().anyMatch(Item::isOnSale);
+System.out.println(anyOnSale);</code></pre>
+        <p><strong>Key takeaway:</strong> Use match methods when you need a direct boolean decision from a collection.
+        </p>
+    </section>
+
+    <section class="slide" id="s23">
+        <span class="badge">Slide 23</span>
+        <h3>Find and Match Example - Part 2</h3>
+        <ul class="points">
+            <li><code>noneMatch</code> is ideal for policy guards (“no dangerous item”, “no invalid state”).</li>
+            <li><code>findAny</code> is fast in parallel contexts; <code>findFirst</code> preserves encounter order.
+            </li>
+            <li>Always handle <code>Optional</code> explicitly instead of calling <code>get()</code> blindly.</li>
+        </ul>
+        <pre><code class="language-java">boolean anyOutOfStock = items.stream().anyMatch(item -&gt; !item.isInStock());
+System.out.println(anyOutOfStock);
+
+boolean noVeryCostlyProduct = items.stream().noneMatch(item -&gt; item.getPrice() &gt; 5000);
+System.out.println(noVeryCostlyProduct);
+
+Optional&lt;Item&gt; randomItemOptional = items.stream()
+    .filter(item -&gt; item.getPrice() &gt; 1000)
+    .findAny();
+System.out.println(randomItemOptional);
+
+Optional&lt;Item&gt; firstItemOptional = items.stream()
+    .filter(item -&gt; item.getPrice() &gt; 1000)
+    .findFirst();
+System.out.println(firstItemOptional);</code></pre>
+    </section>
+
+    <section class="slide" id="s24">
+        <span class="badge">Slide 24</span>
+        <h3>Chaining Stream Operations to Form a Pipeline</h3>
+        <ul class="points">
+            <li>Build a readable chain where each step has one responsibility.</li>
+            <li>Typical flow: filter - transform - sort - collect.</li>
+            <li>Prefer short, composable lambdas over complex in-line business logic.</li>
+            <li>Pipeline clarity usually matters more than reducing line count.</li>
+        </ul>
+    </section>
+
+    <section class="slide" id="s25">
+        <span class="badge">Slide 25</span>
+        <h3>Pipeline Step-by-Step Example</h3>
+        <ul class="points">
+            <li>Step 1: keep odd values only.</li>
+            <li>Step 2: square each value to derive transformed metrics.</li>
+            <li>Step 3: sort final output and collect into a stable list.</li>
+        </ul>
+        <pre><code class="language-java">List&lt;Integer&gt; input = List.of(5, 7, 2, 11, 4, 9, 13);
+
+List&lt;Integer&gt; output = input.stream()
+    .filter(num -&gt; num % 2 != 0)
+    .map(num -&gt; num * num)
+    .sorted()
+    .collect(Collectors.toList());
+
+System.out.println(output); // [25, 49, 81, 121, 169]</code></pre>
+    </section>
+
+    <section class="slide" id="s26">
+        <span class="badge">Slide 26</span>
+        <h3><code>parallelStream()</code></h3>
+        <ul class="points">
+            <li>Sequential streams use one thread; parallel streams split work across threads.</li>
+            <li>Use <code>parallelStream()</code> when each element has meaningful CPU work.</li>
+            <li>Avoid shared mutable state inside lambdas; it breaks correctness in parallel mode.</li>
+            <li>Order may differ unless you enforce ordered terminal behavior.</li>
+            <li>Benchmark before adopting parallel mode; not every workload gets faster.</li>
+        </ul>
+        <pre><code class="language-java">departmentList.parallelStream().forEach(System.out::println);</code></pre>
+    </section>
+
+    <section class="slide" id="s26a">
+        <span class="badge">Slide 26A</span>
+        <h3>Parallel Stream Timing Demo</h3>
+        <ul class="points">
+            <li>This example simulates expensive per-element work with <code>Thread.sleep(100)</code>.</li>
+            <li>In parallel mode, different worker threads execute different items.</li>
+            <li>Console logs expose which thread handled each input value.</li>
+            <li>Elapsed time comparison demonstrates when parallel execution helps.</li>
+        </ul>
+        <pre><code class="language-java">public class Test {
+    public static int doubleIt(int n) {
+        try {
+            Thread.sleep(100);
+            System.out.println(Thread.currentThread().getName() + " is sleeping n=" + n);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return n * 2;
+    }
+
+    public static void main(String[] args) {
+        Instant now = Instant.now();
+
+        int[] array = IntStream.range(0, 10)
+                .parallel()
+                .map(Test::doubleIt)
+                .toArray();
+
+        System.out.println(array.length);
+        System.out.println("Time elapsed: " + (Instant.now().toEpochMilli() - now.toEpochMilli()) + " ms");
+    }
+}</code></pre>
+        <p><strong>Key takeaway:</strong> Parallelism is visible both in thread names and in lower total execution time
+            for heavy work.</p>
+    </section>
+
+    <section class="slide" id="s27">
+        <span class="badge">Slide 27</span>
+        <h3>Mixing Sequential and Parallel Processing</h3>
+        <ul class="points">
+            <li>Filter cheaply first, then parallelize expensive parts.</li>
+            <li>This minimizes parallel overhead and improves practical throughput.</li>
+            <li>Use this pattern for heavy transformations like encryption, scoring, or NLP parsing.</li>
+        </ul>
+        <pre><code class="language-java">String names = persons.stream()
+    .filter(Person::isMajor)
+    .parallel()
+    .map(Person::getName)
+    .collect(Collectors.joining(", "));</code></pre>
+        <p><strong>Key takeaway:</strong> You can switch execution strategy mid-pipeline with <code>parallel()</code>
+            when it truly adds value.</p>
+    </section>
+
+    <section class="slide" id="s28">
+        <span class="badge">Slide 28</span>
+        <h3>Collections vs Streams</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Collections</th>
+                    <th>Streams</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Data holder: stores elements in memory.</td>
+                    <td>Data processor: reads elements from a source on demand.</td>
+                </tr>
+                <tr>
+                    <td>Eager structure; add/remove operations are direct.</td>
+                    <td>Lazy pipeline; transformations are defined first, executed later.</td>
+                </tr>
+                <tr>
+                    <td>Usually iterated with external loops (<code>for</code>, <code>while</code>).</td>
+                    <td>Processed internally via operations (<code>map</code>, <code>filter</code>, <code>reduce</code>).
+                    </td>
+                </tr>
+                <tr>
+                    <td>Reusable across multiple iterations.</td>
+                    <td>Consumable; one stream instance is typically used once.</td>
+                </tr>
+                <tr>
+                    <td>General-purpose container API.</td>
+                    <td>Functional pipeline API with lambdas and collectors.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p><strong>Key takeaway:</strong> Use collections to store and manage data, streams to express transformations
+            and queries cleanly.</p>
+    </section>
+
+    <section class="slide" id="s29">
+        <span class="badge">Slide 29</span>
+        <h3>Practice Problem 1: Count Word Frequency in a Sentence</h3>
+        <ul class="points">
+            <li>Goal: count how many times each word appears and print highest frequency first.</li>
+            <li>Operators used: <code>map</code>, <code>filter</code>, <code>collect</code>, <code>groupingBy</code>,
+                <code>counting</code>, <code>sorted</code>, <code>forEach</code>.
+            </li>
+            <li>This is a common text analytics pattern used in search, logs, and chat processing.</li>
+        </ul>
+        <pre><code class="language-java">String sentence = "Java Stream stream API makes Java code cleaner and stream code readable";
+
+Map&lt;String, Long&gt; freq = Arrays.stream(sentence.toLowerCase().split("\\W+"))
+    .filter(word -&gt; !word.isBlank())
+    .collect(Collectors.groupingBy(
+        Function.identity(),
+        Collectors.counting()
+    ));
+
+freq.entrySet().stream()
+    .sorted(Map.Entry.&lt;String, Long&gt;comparingByValue(Comparator.reverseOrder())
+        .thenComparing(Map.Entry.comparingByKey()))
+    .forEach(e -&gt; System.out.println(e.getKey() + " = " + e.getValue()));</code></pre>
+        <p><strong>Key takeaway:</strong> This is the clean stream-based alternative to manual nested loops and mutable
+            counters.</p>
+    </section>
+
+    <section class="slide" id="s30">
+        <span class="badge">Slide 30</span>
+        <h3>Practice Problem 2: Find the First Non-Repeating Character</h3>
+        <ul class="points">
+            <li>Goal: from a sentence, find the first character that appears only once.</li>
+            <li>Operators used: <code>mapToObj</code>, <code>filter</code>, <code>collect</code>,
+                <code>groupingBy</code>, <code>findFirst</code>.
+            </li>
+            <li>Using <code>LinkedHashMap</code> preserves encounter order so “first” stays correct.</li>
+        </ul>
+        <pre><code class="language-java">String sentence = "Swiss watches are awesome";
+
+Optional&lt;Character&gt; firstUnique = sentence.chars()
+    .mapToObj(c -&gt; Character.toLowerCase((char) c))
+    .filter(Character::isLetter)
+    .collect(Collectors.groupingBy(
+        Function.identity(),
+        LinkedHashMap::new,
+        Collectors.counting()
+    ))
+    .entrySet().stream()
+    .filter(e -&gt; e.getValue() == 1)
+    .map(Map.Entry::getKey)
+    .findFirst();
+
+System.out.println(firstUnique.orElse('-'));</code></pre>
+        <p><strong>Key takeaway:</strong> Streams let you express “count + preserve order + first match” as one readable
+            pipeline.</p>
+    </section>
+
+    <section class="slide" id="s31">
+        <span class="badge">Slide 31</span>
+        <h3>Practice Problem 3: Top 3 Customers by Paid Order Amount</h3>
+        <ul class="points">
+            <li>Goal: aggregate paid orders per customer and print the top 3.</li>
+            <li>Operators used: <code>filter</code>, <code>collect</code>, <code>groupingBy</code>,
+                <code>summingDouble</code>, <code>sorted</code>, <code>limit</code>, <code>map</code>.
+            </li>
+            <li>This pattern is typical in ecommerce and reporting services.</li>
+        </ul>
+        <pre><code class="language-java">record Order(String customer, double amount, String status) {}
+
+List&lt;Order&gt; orders = List.of(
+    new Order("Alice", 120, "PAID"),
+    new Order("Bob", 80, "PAID"),
+    new Order("Alice", 200, "PAID"),
+    new Order("Eve", 50, "CANCELLED"),
+    new Order("Bob", 170, "PAID"),
+    new Order("Charlie", 300, "PAID")
+);
+
+orders.stream()
+    .filter(o -&gt; "PAID".equals(o.status()))
+    .collect(Collectors.groupingBy(Order::customer, Collectors.summingDouble(Order::amount)))
+    .entrySet().stream()
+    .sorted(Map.Entry.&lt;String, Double&gt;comparingByValue(Comparator.reverseOrder()))
+    .limit(3)
+    .map(e -&gt; e.getKey() + " -> $" + String.format("%.2f", e.getValue()))
+    .forEach(System.out::println);</code></pre>
+        <p><strong>Key takeaway:</strong> The stream pipeline reads almost like business language: filter, group, rank,
+            and print.</p>
+    </section>
+
+    <section class="slide theme-green" id="s32">
+        <span class="badge">Slide 32</span>
+        <h3>Cheat Sheet: Creating Streams</h3>
+        <div class="cheatsheet">
+            <div class="cheatsheet-header">1. Creating Streams</div>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>Collection.stream()</strong><br><code>list.stream()</code>
+                    </div>
+                    <div class="cheatsheet-cell">Sequential stream from a collection source.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>Collection.parallelStream()</strong><br><code>list.parallelStream()</code>
+                    </div>
+                    <div class="cheatsheet-cell">Parallel stream when processing is CPU-heavy.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell">
+                        <strong>Arrays.stream(array)</strong><br><code>Arrays.stream(arr)</code></div>
+                    <div class="cheatsheet-cell">Stream over array elements.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>Stream.of(values)</strong><br><code>Stream.of("A", "B")</code>
+                    </div>
+                    <div class="cheatsheet-cell">Quick stream from explicit values.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>Stream.generate(supplier)</strong><br><code>Stream.generate(Math::random)</code>
+                    </div>
+                    <div class="cheatsheet-cell">Potentially infinite generated stream.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>Stream.iterate(seed, next)</strong><br><code>Stream.iterate(1,
+                        n -&gt; n + 1)</code></div>
+                    <div class="cheatsheet-cell">Potentially infinite iterative stream.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide theme-blue" id="s33">
+        <span class="badge">Slide 33</span>
+        <h3>Cheat Sheet: Intermediate Operations (Lazy)</h3>
+        <div class="cheatsheet">
+            <div class="cheatsheet-header">2. Intermediate Operations (Lazy)</div>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>filter(Predicate)</strong><br><code>.filter(s -&gt; s.length()
+                        &gt; 3)</code></div>
+                    <div class="cheatsheet-cell">Keeps only elements matching a condition.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell">
+                        <strong>map(Function)</strong><br><code>.map(String::toUpperCase)</code></div>
+                    <div class="cheatsheet-cell">Transforms each element into another value.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>flatMap(Function)</strong><br><code>.flatMap(s -&gt;
+                        Arrays.stream(s.split(" ")))</code></div>
+                    <div class="cheatsheet-cell">Maps and flattens nested results.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>distinct()</strong><br><code>.distinct()</code></div>
+                    <div class="cheatsheet-cell">Removes duplicates.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>sorted()</strong> / <strong>sorted(cmp)</strong><br><code>.sorted()</code>
+                    </div>
+                    <div class="cheatsheet-cell">Sorts naturally or by comparator.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell">
+                        <strong>peek(Consumer)</strong><br><code>.peek(System.out::println)</code></div>
+                    <div class="cheatsheet-cell">Debug-style action per element.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>limit(n)</strong> / <strong>skip(n)</strong><br><code>.limit(10).skip(2)</code>
+                    </div>
+                    <div class="cheatsheet-cell">Trims or offsets stream output.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide theme-purple" id="s34">
+        <span class="badge">Slide 34</span>
+        <h3>Cheat Sheet: Terminal Operations (Trigger Execution)</h3>
+        <div class="cheatsheet">
+            <div class="cheatsheet-header">3. Terminal Operations</div>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>forEach(Consumer)</strong><br><code>.forEach(System.out::println)</code>
+                    </div>
+                    <div class="cheatsheet-cell">Performs action for each element.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>collect(Collector)</strong><br><code>.collect(Collectors.toList())</code>
+                    </div>
+                    <div class="cheatsheet-cell">Collects elements into final structure.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>reduce(identity, op)</strong><br><code>.reduce(0,
+                        Integer::sum)</code></div>
+                    <div class="cheatsheet-cell">Reduces to a single value.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>count()</strong><br><code>.count()</code></div>
+                    <div class="cheatsheet-cell">Returns number of elements.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>min(cmp)</strong> / <strong>max(cmp)</strong><br><code>.max(String::compareTo)</code>
+                    </div>
+                    <div class="cheatsheet-cell">Returns minimum or maximum element.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>anyMatch/allMatch/noneMatch</strong><br><code>.anyMatch(s -&gt;
+                        s.startsWith("A"))</code></div>
+                    <div class="cheatsheet-cell">Boolean checks over stream elements.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>findFirst()</strong> / <strong>findAny()</strong><br><code>.findFirst()</code>
+                    </div>
+                    <div class="cheatsheet-cell">Finds element wrapped by <code>Optional</code>.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide theme-orange" id="s35">
+        <span class="badge">Slide 35</span>
+        <h3>Cheat Sheet: Collectors Used with <code>collect()</code></h3>
+        <div class="cheatsheet">
+            <div class="cheatsheet-header">4. Collectors</div>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell">
+                        <strong>toList()</strong><br><code>stream.collect(Collectors.toList())</code></div>
+                    <div class="cheatsheet-cell">Collects elements into a list.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell">
+                        <strong>toSet()</strong><br><code>stream.collect(Collectors.toSet())</code></div>
+                    <div class="cheatsheet-cell">Collects unique elements into a set.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>toMap(keyMapper, valueMapper)</strong><br><code>stream.collect(Collectors.toMap(User::id,
+                        User::name))</code></div>
+                    <div class="cheatsheet-cell">Collects elements into a map.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>joining(delimiter)</strong><br><code>stream.collect(Collectors.joining(",
+                        "))</code></div>
+                    <div class="cheatsheet-cell">Concatenates elements into a string.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>groupingBy(classifier)</strong><br><code>stream.collect(Collectors.groupingBy(User::dept))</code>
+                    </div>
+                    <div class="cheatsheet-cell">Groups elements by classifier.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>partitioningBy(predicate)</strong><br><code>stream.collect(Collectors.partitioningBy(User::isActive))</code>
+                    </div>
+                    <div class="cheatsheet-cell">Partitions elements into true/false groups.</div>
+                </div>
+                <div class="cheatsheet-row">
+                    <div class="cheatsheet-cell"><strong>summarizingInt/Long/Double</strong><br><code>stream.collect(Collectors.summarizingInt(User::age))</code>
+                    </div>
+                    <div class="cheatsheet-cell">Produces summary statistics.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide theme-teal" id="s36">
+        <span class="badge">Slide 36</span>
+        <h3>Cheat Sheet: Real-World Use Cases and Best Practices</h3>
+        <div class="cheatsheet-2col">
+            <div class="cheat-mini theme-teal">
+                <h4>Real-World Use Cases</h4>
+                <ul>
+                    <li>E-commerce: filter active products, sort by price/rating, top N by category.</li>
+                    <li>Banking: group by transaction type, detect suspicious patterns.</li>
+                    <li>HR: filter by department, group by role, compute average salary.</li>
+                    <li>Log analysis: count errors per day, extract unique users/IPs.</li>
+                    <li>Inventory: low-stock filtering, supplier grouping, total stock value.</li>
+                </ul>
+            </div>
+            <div class="cheat-mini theme-blue">
+                <h4>Best Practices</h4>
+                <ul>
+                    <li>Prefer streams for meaningful data processing, not trivial loops.</li>
+                    <li>Avoid mutating shared state inside pipelines.</li>
+                    <li>Use method references when it improves readability.</li>
+                    <li>Benchmark before using <code>parallelStream()</code>.</li>
+                    <li>Keep lambdas small, stateless, and intention-revealing.</li>
+                </ul>
+            </div>
+        </div>
+        <pre><code class="language-java">List&lt;String&gt; names = List.of("Alice", "Bob", "Charlie", "David", "Bob");
+
+List&lt;String&gt; result = names.stream()
+    .filter(s -&gt; s.length() &gt; 3)
+    .map(String::toLowerCase)
+    .distinct()
+    .sorted()
+    .collect(Collectors.toList());
+
+System.out.println(result); // [alice, charlie, david]</code></pre>
+    </section>
+
+    <div class="deck-controls" role="navigation" aria-label="Slide navigation controls">
+        <button class="nav-btn" id="prevBtn" type="button">Previous</button>
+        <div class="progress-area">
+            <div class="counter" id="slideCounter">Slide 1 of 37</div>
+            <input id="slideRange" type="range" min="1" max="37" value="1"/>
+        </div>
+        <button class="nav-btn" id="nextBtn" type="button">Next</button>
+    </div>
+
+    <a class="home-btn" href="index.html" aria-label="Back to lessons">All Lessons</a>
+
+    <button id="fullscreenBtn" class="fullscreen-btn" type="button" aria-label="Enter fullscreen"
+            title="Enter fullscreen">
+        <svg class="fullscreen-icon-enter" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 4H4v5"></path>
+            <path d="M15 4h5v5"></path>
+            <path d="M4 15v5h5"></path>
+            <path d="M20 15v5h-5"></path>
+        </svg>
+        <svg class="fullscreen-icon-exit" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 9H4V4"></path>
+            <path d="M15 9h5V4"></path>
+            <path d="M4 20v-5h5"></path>
+            <path d="M20 20v-5h-5"></path>
+        </svg>
+    </button>
+</main>
+<script>
+    (() => {
+        const slides = Array.from(document.querySelectorAll(".slide"));
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const slideRange = document.getElementById("slideRange");
+        const slideCounter = document.getElementById("slideCounter");
+        const fullscreenBtn = document.getElementById("fullscreenBtn");
+        let currentIndex = 0;
+
+        const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+        const shadowPalette = [
+            "#7D58F8",
+            "#F66AB2",
+            "#F6C636",
+            "#35D39A",
+            "#5EA5FF",
+            "#FF8F5A"
+        ];
+        const stepPalette = [
+            "#8A63FB",
+            "#F57BC0",
+            "#F7CA3D",
+            "#39D8A0",
+            "#66AEFF",
+            "#FF9D66"
+        ];
+        const fixedSlideTheme = {
+            s32: {shadow: "#0f7f69", step: "#0f7f69"},
+            s33: {shadow: "#166fb4", step: "#166fb4"},
+            s34: {shadow: "#8d58ad", step: "#8d58ad"},
+            s35: {shadow: "#e98b23", step: "#e98b23"},
+            s36: {shadow: "#0f98b8", step: "#0f98b8"}
+        };
+
+        function setRandomSlideShadow(slide) {
+            const x = randInt(6, 11);
+            const y = randInt(6, 11);
+            const fixed = fixedSlideTheme[slide.id];
+            const shadowColor = fixed ? fixed.shadow : shadowPalette[randInt(0, shadowPalette.length - 1)];
+            const stepColor = fixed ? fixed.step : stepPalette[randInt(0, stepPalette.length - 1)];
+
+            slide.style.setProperty("--shadow-x", `${x}px`);
+            slide.style.setProperty("--shadow-y", `${y}px`);
+            slide.style.setProperty("--shadow-color", shadowColor);
+            slide.style.setProperty("--step-color", stepColor);
+        }
+
+        const slideHooks = [
+            "We start with the big picture: Streams are about expressing data processing clearly.",
+            "",
+            "Array and generated streams cover both fixed datasets and dynamic data flows.",
+            "This is the core mental model: stream = computation, collection = storage.",
+            "Every stream task follows the same pipeline structure; master this once, reuse forever.",
+            "map() is your go-to for transforming one shape of data into another.",
+            "Good map usage means pure, small transformations that are easy to test.",
+            "flatMap() solves nested data elegantly, especially in real domain models.",
+            "This example mirrors production cases like aggregating contact points across users.",
+            "filter() enforces business rules directly in the pipeline.",
+            "limit() keeps output bounded and protects you from unbounded sources.",
+            "skip() plus limit() gives clean, readable pagination logic.",
+            "This rule saves debugging time: a stream instance is not reusable.",
+            "reduce() teaches controlled accumulation, one of the most important functional patterns.",
+            "Concrete reduce examples make aggregation patterns easy to remember.",
+            "collect() is where stream results become API-ready structures.",
+            "These collectors cover 80% of reporting and transformation needs.",
+            "collectingAndThen() is perfect when you need a polished final result type.",
+            "groupingBy() is the bridge from raw events to analytics insights.",
+            "partitioningBy() is a binary decision pattern you’ll use in many services.",
+            "Match/find methods are fast decision tools thanks to short-circuit execution.",
+            "Here we validate stock and sale conditions exactly like checkout logic.",
+            "Optional-aware find operations prevent null-driven production bugs.",
+            "Chaining operations is where stream readability becomes a real team advantage.",
+            "This walkthrough turns pipeline theory into a practical coding pattern.",
+            "parallelStream() is powerful, but only when workload and data size justify it.",
+            "This timing demo shows real parallel execution by thread names and elapsed duration.",
+            "Hybrid pipelines let you parallelize only the expensive parts.",
+            "This final comparison helps you choose the right abstraction with confidence.",
+            "Now we move to practical algorithmic exercises students can run immediately.",
+            "This problem combines counting, order preservation, and first-match logic.",
+            "This is a real reporting pipeline: filter, aggregate, rank, and format.",
+            "This recap mirrors the visual cheat sheet style for creating stream sources quickly.",
+            "These are the most frequently used intermediate operations in real code reviews.",
+            "Terminal operations execute pipelines and produce actual outcomes for business logic.",
+            "Collectors are your toolkit for converting pipelines into practical data structures.",
+            "Real-world mapping plus best practices turns stream knowledge into production skill."
+        ];
+
+        // Wrap each slide content into a card container and randomize only card shadow.
+        slides.forEach((slide, idx) => {
+            const first = slide.firstElementChild;
+            if (!first || !first.classList.contains("slide-card")) {
+                const card = document.createElement("div");
+                card.className = "slide-card";
+                while (slide.firstChild) {
+                    card.appendChild(slide.firstChild);
+                }
+                slide.appendChild(card);
+            }
+            setRandomSlideShadow(slide);
+
+            const card = slide.querySelector(".slide-card");
+            const title = card ? card.querySelector("h3") : null;
+            const hookText = slideHooks[Math.min(slideHooks.length - 1, idx)];
+            if (card && title && hookText && hookText.trim().length > 0 && !card.querySelector(".lead")) {
+                const lead = document.createElement("p");
+                lead.className = "lead";
+                lead.textContent = hookText;
+                title.insertAdjacentElement("afterend", lead);
+            }
+
+            if (card) {
+                const badge = card.querySelector(".badge");
+                if (badge) {
+                    const numberMatch = badge.textContent.match(/\d+/);
+                    if (numberMatch) {
+                        badge.textContent = `S${numberMatch[0].padStart(2, "0")}`;
+                    }
+                }
+
+                card.querySelectorAll("p > strong").forEach((strong) => {
+                    if (strong.textContent.trim().toLowerCase().startsWith("student note")) {
+                        strong.textContent = "Key takeaway:";
+                    }
+                });
+            }
+        });
+
+        slideRange.max = String(slides.length);
+
+        const interviewSlide = document.getElementById("s2");
+        const interviewQuestions = interviewSlide
+            ? Array.from(interviewSlide.querySelectorAll("ol.points li"))
+            : [];
+        const interviewLastStep = interviewQuestions.length > 0 ? (interviewQuestions.length * 2) - 1 : -1;
+        let interviewStep = interviewQuestions.length > 0 ? 0 : -1;
+
+        function applyInterviewStep() {
+            if (interviewQuestions.length === 0 || interviewStep < 0) return;
+
+            const activeQuestionIndex = Math.floor(interviewStep / 2);
+            const showAnswer = interviewStep % 2 === 1;
+
+            interviewQuestions.forEach((question, idx) => {
+                const isActiveQuestion = idx === activeQuestionIndex;
+                question.hidden = idx > activeQuestionIndex;
+
+                const answer = question.querySelector(".interview-answer");
+                if (answer) {
+                    answer.hidden = !(isActiveQuestion && showAnswer);
+                }
+            });
+        }
+
+        function onInterviewSlide() {
+            const activeSlide = slides[currentIndex];
+            return Boolean(activeSlide && activeSlide.id === "s2");
+        }
+
+        function goNextInterviewStep() {
+            if (!onInterviewSlide()) return false;
+            if (interviewStep >= interviewLastStep) return false;
+
+            interviewStep += 1;
+            applyInterviewStep();
+            fitSlideContent(slides[currentIndex]);
+            return true;
+        }
+
+        function goPreviousInterviewStep() {
+            if (!onInterviewSlide()) return false;
+            if (interviewStep <= 0) return false;
+
+            interviewStep -= 1;
+            applyInterviewStep();
+            fitSlideContent(slides[currentIndex]);
+            return true;
+        }
+
+        function updateInterviewNavLabels() {
+            const isInterview = onInterviewSlide();
+            if (!isInterview || interviewStep < 0) {
+                prevBtn.textContent = "Previous";
+                nextBtn.textContent = "Next";
+                return;
+            }
+
+            const showingAnswer = interviewStep % 2 === 1;
+            prevBtn.textContent = interviewStep > 0 ? "Previous Step" : "Previous";
+            nextBtn.textContent = interviewStep < interviewLastStep
+                ? (showingAnswer ? "Next Question" : "Show Answer")
+                : "Next";
+        }
+
+        function goNext() {
+            if (goNextInterviewStep()) {
+                updateInterviewNavLabels();
+                return;
+            }
+            showSlide(currentIndex + 1);
+        }
+
+        function goPrevious() {
+            if (goPreviousInterviewStep()) {
+                updateInterviewNavLabels();
+                return;
+            }
+            showSlide(currentIndex - 1);
+        }
+
+        async function toggleFullscreen() {
+            try {
+                if (!document.fullscreenElement) {
+                    await document.documentElement.requestFullscreen();
+                } else {
+                    await document.exitFullscreen();
+                }
+            } catch (_err) {
+                // Ignore fullscreen errors (browser/user settings)
+            }
+        }
+
+        function syncFullscreenUi() {
+            const isFs = Boolean(document.fullscreenElement);
+            document.body.classList.toggle("is-fullscreen", isFs);
+            if (fullscreenBtn) {
+                const label = isFs ? "Exit fullscreen" : "Enter fullscreen";
+                fullscreenBtn.setAttribute("aria-label", label);
+                fullscreenBtn.title = label;
+            }
+        }
+
+        function fitSlideContent(slide) {
+            if (!slide) return;
+            const card = slide.querySelector(".slide-card");
+            if (!card) return;
+
+            card.classList.remove("compact-1", "compact-2", "compact-3");
+
+            const compactLevels = ["compact-1", "compact-2", "compact-3"];
+            for (const level of compactLevels) {
+                if (card.scrollHeight <= card.clientHeight + 2) break;
+                card.classList.add(level);
+            }
+        }
+
+        function showSlide(index) {
+            currentIndex = Math.max(0, Math.min(index, slides.length - 1));
+            slides.forEach((slide, i) => {
+                const active = i === currentIndex;
+                slide.classList.toggle("active", active);
+                slide.setAttribute("aria-hidden", String(!active));
+                if (active) {
+                    slide.scrollTop = 0;
+                    const card = slide.querySelector(".slide-card");
+                    if (card) card.scrollTop = 0;
+                    fitSlideContent(slide);
+                }
+            });
+
+            slideRange.value = String(currentIndex + 1);
+            slideCounter.textContent = `Slide ${currentIndex + 1} of ${slides.length}`;
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === slides.length - 1;
+            updateInterviewNavLabels();
+        }
+
+        prevBtn.addEventListener("click", goPrevious);
+        nextBtn.addEventListener("click", goNext);
+        if (fullscreenBtn) {
+            fullscreenBtn.addEventListener("click", toggleFullscreen);
+        }
+        slideRange.addEventListener("input", (event) => {
+            const value = Number(event.target.value) - 1;
+            showSlide(value);
+        });
+
+        document.addEventListener("fullscreenchange", () => {
+            syncFullscreenUi();
+            fitSlideContent(slides[currentIndex]);
+        });
+
+        let resizeTimer;
+        window.addEventListener("resize", () => {
+            window.clearTimeout(resizeTimer);
+            resizeTimer = window.setTimeout(() => {
+                fitSlideContent(slides[currentIndex]);
+            }, 90);
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "ArrowRight" || event.key === "PageDown") {
+                event.preventDefault();
+                goNext();
+            } else if (event.key === "ArrowLeft" || event.key === "PageUp") {
+                event.preventDefault();
+                goPrevious();
+            } else if (event.key === "Home") {
+                event.preventDefault();
+                showSlide(0);
+            } else if (event.key === "End") {
+                event.preventDefault();
+                showSlide(slides.length - 1);
+            } else if (event.key.toLowerCase() === "f") {
+                const target = event.target;
+                const isTyping =
+                    target &&
+                    (target.tagName === "INPUT" ||
+                        target.tagName === "TEXTAREA" ||
+                        target.isContentEditable);
+                if (!isTyping) {
+                    event.preventDefault();
+                    toggleFullscreen();
+                }
+            }
+        });
+
+        applyInterviewStep();
+        showSlide(0);
+        syncFullscreenUi();
+    })();
+</script>
+</body>
+</html>

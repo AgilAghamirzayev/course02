@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Java Backend Course Lessons</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@700;800&display=swap");
+
+    :root {
+      --bg: #fffdf5;
+      --foreground: #1f1f1f;
+      --card: #ffffff;
+      --muted: #4e5f7c;
+      --primary: #7a63f6;
+      --secondary: #f6efe0;
+      --dot-bg: #f7f5ee;
+      --dot-color: #d8d3c6;
+      --heading: #24304a;
+      --success: #35d39a;
+      --pending: #f6c636;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Plus Jakarta Sans", "Outfit", Inter, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--foreground);
+      background: #f5f0e3;
+      line-height: 1.5;
+    }
+
+    main {
+      width: min(1260px, 100%);
+      margin: 0 auto;
+      padding: 18px 16px 26px;
+    }
+
+    .hero {
+      position: relative;
+      display: grid;
+      gap: 14px;
+      padding: clamp(16px, 2.2vw, 24px);
+      border: 2px solid var(--foreground);
+      border-radius: 20px;
+      background: var(--dot-bg);
+      background-image: radial-gradient(var(--dot-color) 1.05px, transparent 1.05px);
+      background-size: 14px 14px;
+      box-shadow: 9px 9px 0 0 #24304a;
+      transform: rotate(-0.25deg);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+      font-size: clamp(28px, 4.1vw, 50px);
+      line-height: 1.08;
+      font-weight: 850;
+      letter-spacing: 0;
+      color: var(--heading);
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(15px, 1.55vw, 22px);
+      max-width: 900px;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--foreground);
+      border-radius: 999px;
+      background: #fff;
+      color: #2e3a54;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 6px 11px;
+      min-height: 30px;
+      box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.2);
+      white-space: nowrap;
+    }
+
+    #readyCount {
+      background: #e3fbf1;
+    }
+
+    #pendingCount {
+      background: #fff3d6;
+    }
+
+    .tools {
+      margin-top: 6px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 230px;
+      gap: 10px;
+    }
+
+    .tools input,
+    .tools select {
+      width: 100%;
+      min-height: 46px;
+      border: 2px solid var(--foreground);
+      border-radius: 12px;
+      padding: 0 12px;
+      background: #fff;
+      color: var(--foreground);
+      font-size: 15px;
+      font-weight: 700;
+      outline: none;
+      box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.2);
+    }
+
+    .tools input::placeholder {
+      color: #6f7480;
+      font-weight: 600;
+    }
+
+    .tools input:focus,
+    .tools select:focus {
+      border-color: #5e47e8;
+      box-shadow: 0 0 0 3px rgba(122, 99, 246, 0.2), 3px 3px 0 0 rgba(0, 0, 0, 0.16);
+    }
+
+    .lessons-grid {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 14px;
+    }
+
+    .lesson-card {
+      --card-shadow: #7d58f8;
+      border: 2px solid var(--foreground);
+      border-radius: 16px;
+      background: var(--dot-bg);
+      background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
+      background-size: 12px 12px;
+      padding: 12px 12px 10px;
+      min-height: 178px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 10px;
+      box-shadow: 6px 6px 0 0 var(--card-shadow);
+      transition: transform 150ms ease, box-shadow 150ms ease;
+    }
+
+    .lesson-card:nth-of-type(3n+1) { --card-shadow: #7d58f8; }
+    .lesson-card:nth-of-type(3n+2) { --card-shadow: #f57bc0; }
+    .lesson-card:nth-of-type(3n) { --card-shadow: #66aeff; }
+
+    .lesson-card.available:hover {
+      transform: translateY(-2px);
+      box-shadow: 8px 8px 0 0 var(--card-shadow);
+    }
+
+    .lesson-no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 92px;
+      min-height: 32px;
+      border: 2px solid var(--foreground);
+      border-radius: 999px;
+      background: #f6c636;
+      color: #1f1f1f;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0;
+      box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.18);
+      white-space: nowrap;
+    }
+
+    .lesson-title {
+      margin: 0;
+      color: #283652;
+      font-size: clamp(15px, 1.24vw, 19px);
+      font-weight: 800;
+      line-height: 1.34;
+      word-break: break-word;
+    }
+
+    .lesson-meta {
+      margin: 0;
+      color: #4f5f7d;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.25;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .lesson-meta .tag {
+      border: 2px solid var(--foreground);
+      border-radius: 999px;
+      background: #eef3ff;
+      color: #2f4a86;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 7px;
+      white-space: nowrap;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .status {
+      font-size: 11px;
+      font-weight: 800;
+      border: 2px solid var(--foreground);
+      border-radius: 999px;
+      padding: 4px 8px;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+      color: #1f1f1f;
+      white-space: nowrap;
+      box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.14);
+    }
+
+    .status.ready {
+      background: #d9f9ed;
+    }
+
+    .status.waiting {
+      background: #fff0cf;
+    }
+
+    .status.deck {
+      background: #e8edff;
+    }
+
+    .lesson-link,
+    .lesson-link:visited {
+      text-decoration: none;
+      border: 2px solid #1f1f1f;
+      border-radius: 10px;
+      background: var(--primary);
+      color: #fff;
+      min-height: 34px;
+      padding: 0 11px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.26);
+      white-space: nowrap;
+    }
+
+    .lesson-link:hover {
+      filter: brightness(1.03);
+    }
+
+    .disabled-link {
+      color: #6c7487;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: right;
+      word-break: break-word;
+    }
+
+    .empty-state {
+      margin-top: 16px;
+      border: 2px dashed #6d7487;
+      border-radius: 14px;
+      background: #fff;
+      color: #505a71;
+      padding: 16px;
+      font-size: 15px;
+      font-weight: 700;
+      display: none;
+    }
+
+    @media (max-width: 980px) {
+      .hero {
+        transform: none;
+        box-shadow: 6px 6px 0 0 #24304a;
+      }
+    }
+
+    @media (max-width: 760px) {
+      main {
+        padding: 12px 10px 20px;
+      }
+
+      .tools {
+        grid-template-columns: 1fr;
+      }
+
+      .lessons-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <section class="hero" aria-label="Course overview">
+    <h1>Java Backend Course - Lesson Portal</h1>
+    <p>All lessons are listed here. Open any ready lesson to view its full slide deck with presenter-friendly navigation.</p>
+    <div class="meta-row">
+      <span class="pill" id="totalCount">Total: 0</span>
+      <span class="pill" id="readyCount">Ready: 0</span>
+      <span class="pill" id="pendingCount">Pending: 0</span>
+    </div>
+    <div class="tools">
+      <input id="searchInput" type="search" placeholder="Search by lesson number or title..." />
+      <select id="filterSelect">
+        <option value="all">All</option>
+        <option value="ready">Ready slides only</option>
+        <option value="pending">Pending slides only</option>
+      </select>
+    </div>
+  </section>
+
+  <section id="lessonsGrid" class="lessons-grid" aria-label="Lessons"></section>
+  <p id="emptyState" class="empty-state">No results found for this search or filter.</p>
+</main>
+
+<script>
+  const lessonTitles = [
+    "Program Orientation, Java Ecosystem, and Environment Setup",
+    "Git and GitHub Fundamentals",
+    "Variables, Data Types, Operators, and Console I/O",
+    "Control Flow, Loops, and Methods",
+    "Arrays, Strings, and Iteration Patterns",
+    "Algorithm and Data Structure, Problem-Solving, and Big-O Basics",
+    "OOP Fundamentals",
+    "Recap, Quiz, and Coding Checkpoint",
+    "Inheritance, and Object Class",
+    "Polymorphism, Abstraction, Interfaces, and Design for Testability",
+    "Enums, Wrapper Types, var, and Parameter Passing",
+    "Collections Framework I (List)",
+    "Collections Framework II (Set and Map)",
+    "Exceptions, Validation Basics, and Logging Intro",
+    "Generics and Wildcards",
+    "Recap, Quiz, and Practical Evaluation",
+    "Functional Interfaces, Lambdas, and Method References",
+    "Streams, Collectors, and Optional",
+    "Java I/O and NIO.2",
+    "Reflection and Annotations",
+    "Thread Fundamentals",
+    "Advanced Concurrency and Virtual Threads",
+    "SOLID and Core Design Patterns",
+    "Recap, Quiz, and Refactoring Lab",
+    "Docker and Local Infrastructure",
+    "SQL Foundations",
+    "Advanced SQL and Transactions",
+    "HTTP and REST Fundamentals",
+    "JDBC and DAO Pattern",
+    "Build Tooling and Project Lifecycle",
+    "Spring Boot Fundamentals and First API",
+    "Recap, Quiz, and Backend Checkpoint",
+    "REST Controller Design and API Layer Practices",
+    "Configuration, Profiles, Logging, and API Docs",
+    "Spring Data JPA and CRUD Implementation",
+    "Entity Relationships and Fetch Strategy",
+    "Query Optimization and Transaction Boundaries",
+    "Database Versioning with Liquibase",
+    "Validation and Global Error Handling",
+    "Recap, Quiz, and Feature Delivery Assessment",
+    "Spring Security Foundations",
+    "JWT and Applied Security Patterns",
+    "Scheduling and Background Processing",
+    "Calling External Services",
+    "Testing Strategy (Unit + Integration)",
+    "Microservices Fundamentals",
+    "Microservice Design Patterns",
+    "Recap, Quiz, and Architecture Case Review",
+    "Dockerfile, Integration Testing, and Contract Testing",
+    "Kubernetes Fundamentals",
+    "Service Exposure and Runtime Configuration in Kubernetes",
+    "Monitoring and Metrics",
+    "Centralized Logging and Tracing Basics",
+    "Agile Delivery and Project Management",
+    "Interview Preparation and CV/GitHub Review",
+    "Final Exam and Capstone Presentation"
+  ];
+
+  // Map of available slide files by lesson number. Add new entries as slides are created.
+  const slideByLesson = {
+    18: "section26-streams-api-guide.html",
+    19: "section27-io-nio2-guide.html"
+  };
+
+  const lessons = lessonTitles.map((title, idx) => {
+    const lessonNo = idx + 1;
+    return {
+      lessonNo,
+      title,
+      slidePath: slideByLesson[lessonNo] || null
+    };
+  });
+
+  const lessonsGrid = document.getElementById("lessonsGrid");
+  const emptyState = document.getElementById("emptyState");
+  const searchInput = document.getElementById("searchInput");
+  const filterSelect = document.getElementById("filterSelect");
+  const totalCount = document.getElementById("totalCount");
+  const readyCount = document.getElementById("readyCount");
+  const pendingCount = document.getElementById("pendingCount");
+
+  function updateCounters(sourceList) {
+    const ready = sourceList.filter((item) => item.slidePath).length;
+    const pending = sourceList.length - ready;
+    totalCount.textContent = `Total: ${sourceList.length}`;
+    readyCount.textContent = `Ready: ${ready}`;
+    pendingCount.textContent = `Pending: ${pending}`;
+  }
+
+  function renderCards(list) {
+    if (list.length === 0) {
+      lessonsGrid.innerHTML = "";
+      emptyState.style.display = "block";
+      return;
+    }
+
+    emptyState.style.display = "none";
+
+    lessonsGrid.innerHTML = list.map((lesson) => {
+      const lessonNoLabel = String(lesson.lessonNo).padStart(2, "0");
+      const ready = Boolean(lesson.slidePath);
+      const sectionMatch = ready ? lesson.slidePath.match(/section(\d+)-/) : null;
+      const sectionLabel = sectionMatch ? `Section ${sectionMatch[1]}` : null;
+      return `
+        <article class="lesson-card ${ready ? "available" : ""}">
+          <div class="lesson-no">Lesson ${lessonNoLabel}</div>
+          <h2 class="lesson-title">${lesson.title}</h2>
+          <p class="lesson-meta">
+            ${
+              ready && sectionLabel
+                ? `<span class="tag">${sectionLabel}</span><span>Slide deck is ready</span>`
+                : `<span>Slide deck is not created yet</span>`
+            }
+          </p>
+          <div class="card-footer">
+            <span class="status ${ready ? "deck" : "waiting"}">${ready ? "Deck Ready" : "Pending"}</span>
+            ${
+              ready
+                ? `<a class="lesson-link" href="${lesson.slidePath}" aria-label="Open lesson ${lessonNoLabel} deck">Open Lesson</a>`
+                : `<span class="disabled-link">No slide yet</span>`
+            }
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
+  function applyFilters() {
+    const q = searchInput.value.trim().toLowerCase();
+    const mode = filterSelect.value;
+
+    const filtered = lessons.filter((lesson) => {
+      const byMode =
+        mode === "ready" ? Boolean(lesson.slidePath) :
+        mode === "pending" ? !lesson.slidePath :
+        true;
+
+      if (!byMode) return false;
+
+      if (!q) return true;
+
+      return (
+        lesson.title.toLowerCase().includes(q) ||
+        String(lesson.lessonNo).includes(q)
+      );
+    });
+
+    renderCards(filtered);
+  }
+
+  searchInput.addEventListener("input", applyFilters);
+  filterSelect.addEventListener("change", applyFilters);
+
+  updateCounters(lessons);
+  renderCards(lessons);
+</script>
+</body>
+</html>

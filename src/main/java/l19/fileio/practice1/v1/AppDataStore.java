@@ -1,21 +1,18 @@
-package l19.fileio.practice1;
+package l19.fileio.practice1.v1;
 
-import static l19.fileio.practice1.FileUtils.readAll;
-import static l19.fileio.practice1.FileUtils.writeAtomically;
+import static l19.fileio.practice1.v1.FileUtils.readAll;
+import static l19.fileio.practice1.v1.FileUtils.writeAtomically;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public final class AppDataStore {
 
@@ -49,8 +46,8 @@ public final class AppDataStore {
 
     public Map<String, UserAccount> loadUsersByNormalizedUsername() {
         Map<String, UserAccount> users = new HashMap<>();
-        List<String> lines = readAll(usersPath);
-        for (String line : lines) {
+        List<String> lines = readAll(usersPath); // TOOD: read form User Object
+        for (String line : lines) { // TODO: move to stream
             if (line.isBlank()) {
                 continue;
             }
@@ -69,24 +66,6 @@ public final class AppDataStore {
         }
         return users;
     }
-
-//    public Map<String, UserAccount> loadUsersByNormalizedUsername() {
-//        return readAll(usersPath).stream()
-//                .filter(line -> !line.isBlank())
-//                .map(line -> line.split("\t", -1))
-//                .filter(parts -> parts.length == 5)
-//                .map(parts -> new UserAccount(
-//                        parts[0],
-//                        parts[1],
-//                        parseLongOrZero(parts[2]),
-//                        parts[3],
-//                        parts[4]
-//                ))
-//                .collect(Collectors.toMap(
-//                        user -> normalizeUsername(user.username()),
-//                        Function.identity()
-//                ));
-//    }
 
     public List<TodoItem> loadTodos() {
         List<TodoItem> todos = new ArrayList<>();
