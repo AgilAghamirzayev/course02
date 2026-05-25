@@ -232,6 +232,7 @@ with Spring Boot, PostgreSQL, Docker, and Kubernetes fundamentals.
 - [ ] Creating threads (`Runnable` vs `Thread`)
 - [ ] Interruption and cooperative cancellation
 - [ ] Concurrency hazards overview
+- ![Thread 1](imgs/thread-1.png)
 
 ### Lesson 22: Advanced Concurrency and Virtual Threads
 

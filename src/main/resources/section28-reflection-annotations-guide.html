@@ -1,0 +1,943 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Section 28: Reflection and Annotations - Slide-by-Slide Guide</title>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap");
+
+        :root {
+            --bg: #fffdf5;
+            --foreground: #1f1f1f;
+            --secondary: #f6efe0;
+            --dot-bg: #f7f5ee;
+            --dot-color: #d8d3c6;
+            --heading: #24304a;
+            --bodytext: #4e5f7c;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Plus Jakarta Sans", "Outfit", Inter, "Segoe UI", Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--foreground);
+            line-height: 1.55;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+        }
+
+        header,
+        nav {
+            display: none;
+        }
+
+        .slide {
+            display: none;
+            position: relative;
+            width: 100%;
+            height: 100dvh;
+            overflow: hidden;
+            padding: 14px 16px 90px;
+            background: #f5f0e3;
+            isolation: isolate;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        .slide-card {
+            position: relative;
+            width: min(1220px, 100%);
+            height: 100%;
+            margin: 0 auto;
+            border: 2px solid var(--foreground);
+            border-radius: 22px;
+            background: var(--dot-bg);
+            background-image: radial-gradient(var(--dot-color) 1.05px, transparent 1.05px);
+            background-size: 14px 14px;
+            box-shadow: 9px 9px 0 0 var(--foreground);
+            padding: clamp(14px, 1.5vw, 22px) clamp(18px, 2.2vw, 34px) clamp(20px, 2.4vw, 32px);
+            overflow: auto;
+            transform: rotate(-0.35deg);
+        }
+
+        .slide:nth-of-type(even) .slide-card {
+            transform: rotate(0.25deg);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            right: 14px;
+            top: 12px;
+            border: 2px solid var(--foreground);
+            border-radius: 999px;
+            background: #f7c72f;
+            color: var(--foreground);
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: clamp(10px, 0.92vw, 12px);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            padding: 5px 10px;
+            box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.25);
+            min-width: 58px;
+            white-space: nowrap;
+        }
+
+        .slide h3 {
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            margin: 0 0 12px;
+            padding-right: 92px;
+            font-size: clamp(30px, 3.4vw, 52px);
+            line-height: 1.1;
+            font-weight: 850;
+            letter-spacing: 0;
+            color: var(--heading);
+        }
+
+        .lead {
+            margin: 0 0 14px;
+            padding: 10px 12px;
+            border: 2px solid var(--foreground);
+            border-radius: 12px;
+            background: color-mix(in srgb, var(--secondary) 82%, white 18%);
+            box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.18);
+            font-weight: 700;
+            color: var(--bodytext);
+            font-size: clamp(19px, 1.5vw, 24px);
+        }
+
+        .lesson-tag {
+            margin: 0 0 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            min-height: 34px;
+            border: 2px solid var(--foreground);
+            border-radius: 999px;
+            background: #ffffff;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 12px;
+            font-weight: 800;
+            color: #2e3a54;
+            padding: 6px 12px;
+            box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.18);
+        }
+
+        .triad-hero {
+            border: 2px solid var(--foreground);
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 5px 5px 0 0 rgba(0, 0, 0, 0.16);
+            padding: clamp(12px, 1.8vw, 18px);
+        }
+
+        .triad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .triad-card {
+            border: 2px solid #d6d6d6;
+            border-radius: 12px;
+            background: #fafafa;
+            padding: 10px;
+            display: grid;
+            gap: 10px;
+            align-content: start;
+        }
+
+        .triad-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            min-height: 30px;
+            border-radius: 8px;
+            color: #fff;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: clamp(12px, 0.95vw, 14px);
+            font-weight: 800;
+            padding: 4px 10px;
+            white-space: nowrap;
+        }
+
+        .triad-pill.blue {
+            background: #1f72c9;
+        }
+
+        .triad-pill.green {
+            background: #42a74c;
+        }
+
+        .triad-pill.purple {
+            background: #7c4cbc;
+        }
+
+        .triad-icon {
+            width: 68px;
+            height: 68px;
+            border: 2px solid #b8b8b8;
+            border-radius: 12px;
+            background: #fff;
+            display: grid;
+            place-items: center;
+        }
+
+        .triad-icon svg {
+            width: 42px;
+            height: 42px;
+        }
+
+        .triad-desc {
+            margin: 0;
+            color: #2e3f5b;
+            font-size: clamp(15px, 1.05vw, 18px);
+            line-height: 1.4;
+            font-weight: 700;
+        }
+
+        .triad-list {
+            margin: 0;
+            padding: 10px 12px 10px 24px;
+            border-radius: 10px;
+            background: #f2f3f6;
+            color: #4d5f7d;
+            font-size: clamp(13px, 0.96vw, 16px);
+            line-height: 1.35;
+            font-weight: 700;
+        }
+
+        .triad-list li {
+            margin: 4px 0;
+        }
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .topic-card {
+            border: 2px solid var(--foreground);
+            border-radius: 14px;
+            background: #fff;
+            box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 0.13);
+            padding: 12px;
+        }
+
+        .topic-card h4 {
+            margin: 0 0 8px;
+            font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+            font-size: clamp(20px, 1.6vw, 28px);
+            line-height: 1.2;
+            color: #24304a;
+        }
+
+        .topic-list {
+            margin: 0;
+            padding-left: 20px;
+            color: #3d5070;
+            font-size: clamp(15px, 1.06vw, 18px);
+            line-height: 1.4;
+            font-weight: 700;
+        }
+
+        .topic-list li {
+            margin: 6px 0;
+        }
+
+        .code-shell {
+            margin-top: 10px;
+            border: 2px solid #253349;
+            border-radius: 12px;
+            background: #1f2937;
+            color: #e7eef9;
+            padding: 10px;
+            overflow: auto;
+            font-size: clamp(13px, 0.96vw, 16px);
+            line-height: 1.4;
+            white-space: pre;
+        }
+
+        .deck-controls {
+            position: fixed;
+            left: 50%;
+            bottom: 14px;
+            transform: translateX(-50%);
+            z-index: 40;
+            width: min(920px, calc(100% - 20px));
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid var(--foreground);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 5px 5px 0 0 rgba(0, 0, 0, 0.2);
+            padding: 8px;
+            backdrop-filter: blur(2px);
+        }
+
+        .progress-area {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .counter {
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-weight: 700;
+            font-size: 12px;
+            color: #2d3d58;
+            white-space: nowrap;
+        }
+
+        .nav-btn {
+            border: 2px solid var(--foreground);
+            border-radius: 10px;
+            min-height: 36px;
+            min-width: 92px;
+            padding: 0 10px;
+            background: #7a63f6;
+            color: #fff;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #slideRange {
+            width: 100%;
+            accent-color: #7a63f6;
+        }
+
+        .home-btn {
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 45;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 34px;
+            padding: 0 12px;
+            border-radius: 10px;
+            border: 2px solid var(--foreground);
+            background: #ffffff;
+            color: #2b3954;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 800;
+            box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.18);
+        }
+
+        .fullscreen-btn {
+            position: fixed;
+            top: 14px;
+            right: 14px;
+            z-index: 45;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 2px solid var(--foreground);
+            background: #ffffff;
+            display: inline-grid;
+            place-items: center;
+            cursor: pointer;
+            box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.18);
+        }
+
+        .fullscreen-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: #2b3954;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .fullscreen-icon-exit {
+            display: none;
+        }
+
+        body.is-fullscreen .fullscreen-icon-enter {
+            display: none;
+        }
+
+        body.is-fullscreen .fullscreen-icon-exit {
+            display: block;
+        }
+
+        @media (max-width: 980px) {
+            .triad-grid,
+            .quick-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .slide {
+                padding: 10px 10px 98px;
+            }
+
+            .slide-card {
+                padding: 12px 12px 18px;
+            }
+
+            .slide h3 {
+                font-size: clamp(24px, 6.2vw, 34px);
+            }
+
+            .deck-controls {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .progress-area {
+                grid-template-columns: 1fr;
+                gap: 4px;
+            }
+
+            .counter {
+                text-align: center;
+            }
+
+            .nav-btn {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .home-btn,
+            .fullscreen-btn {
+                top: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+<main class="container">
+    <header>
+        <h1>Section 28: Reflection and Annotations</h1>
+    </header>
+
+    <nav>
+        <ol>
+            <li><a href="#s1">Slide 1 - Lesson 20: Reflection and Annotations</a></li>
+            <li><a href="#s2">Slide 2 - Reflection Fundamentals</a></li>
+            <li><a href="#s3">Slide 3 - Inspecting Class Metadata</a></li>
+            <li><a href="#s4">Slide 4 - Working with Fields and Methods</a></li>
+            <li><a href="#s5">Slide 5 - Annotation Basics</a></li>
+            <li><a href="#s6">Slide 6 - Runtime Annotation Example</a></li>
+            <li><a href="#s7">Slide 7 - Framework Use Cases</a></li>
+            <li><a href="#s8">Slide 8 - Safety and Performance Boundaries</a></li>
+            <li><a href="#s9">Slide 9 - Summary and Checklist</a></li>
+        </ol>
+    </nav>
+
+    <section class="slide" id="s1">
+        <div class="slide-card">
+            <span class="badge">Slide 1</span>
+            <p class="lesson-tag">Section 28</p>
+            <h3>Lesson 20 - Reflection and Annotations</h3>
+            <p class="lead">Reflection inspects runtime type metadata, and annotations add machine-readable intent to your code.</p>
+            <div class="triad-hero">
+                <div class="triad-grid">
+                    <article class="triad-card">
+                        <span class="triad-pill blue">1. CLASS MODEL</span>
+                        <div class="triad-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="1.5">
+                                <path d="M6 2h8l4 4v16H6z"/>
+                                <path d="M14 2v4h4"/>
+                                <path d="M9 12h6M9 16h6"/>
+                            </svg>
+                        </div>
+                        <p class="triad-desc">A class is a blueprint that defines fields, methods, constructors, and modifiers.</p>
+                        <ul class="triad-list">
+                            <li>Compile-time structure</li>
+                            <li>Loaded by class loader</li>
+                            <li>No dynamic behavior yet</li>
+                        </ul>
+                    </article>
+
+                    <article class="triad-card">
+                        <span class="triad-pill green">2. REFLECTION</span>
+                        <div class="triad-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="1.5">
+                                <rect x="4" y="4" width="16" height="16" rx="3"/>
+                                <path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/>
+                            </svg>
+                        </div>
+                        <p class="triad-desc">Reflection provides runtime access to class metadata and controlled dynamic invocation.</p>
+                        <ul class="triad-list">
+                            <li>Inspect members</li>
+                            <li>Create objects dynamically</li>
+                            <li>Invoke methods by metadata</li>
+                        </ul>
+                    </article>
+
+                    <article class="triad-card">
+                        <span class="triad-pill purple">3. ANNOTATION</span>
+                        <div class="triad-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#7c4cbc" stroke-width="2">
+                                <path d="M12 2c-5 2-5 6 0 8s5 6 0 8"/>
+                            </svg>
+                        </div>
+                        <p class="triad-desc">Annotations mark code with metadata that frameworks and tools read for behavior.</p>
+                        <ul class="triad-list">
+                            <li>Declarative intent</li>
+                            <li>Retention can be runtime</li>
+                            <li>Drives Spring and JPA workflows</li>
+                        </ul>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" id="s2">
+        <div class="slide-card">
+            <span class="badge">Slide 2</span>
+            <h3>Reflection Fundamentals</h3>
+            <p class="lead">Reflection lets Java inspect types at runtime without hard-coding concrete classes.</p>
+            <div class="quick-grid">
+                <article class="topic-card">
+                    <h4>Core Runtime Types</h4>
+                    <ul class="topic-list">
+                        <li><code>Class&lt;?&gt;</code> for type metadata</li>
+                        <li><code>Field</code> for member variables</li>
+                        <li><code>Method</code> for operations</li>
+                        <li><code>Constructor&lt;?&gt;</code> for creation paths</li>
+                    </ul>
+                </article>
+                <article class="topic-card">
+                    <h4>Where It Is Used</h4>
+                    <ul class="topic-list">
+                        <li>Dependency injection and container bootstrapping</li>
+                        <li>Object mapping and serialization tools</li>
+                        <li>Plugin and module discovery</li>
+                        <li>Testing and runtime diagnostics</li>
+                    </ul>
+                </article>
+            </div>
+            <pre class="code-shell">Class&lt;UserService&gt; type = UserService.class;
+String name = type.getSimpleName();
+Method[] methods = type.getDeclaredMethods();
+System.out.println(name + " has " + methods.length + " methods");</pre>
+        </div>
+    </section>
+
+    <section class="slide" id="s3">
+        <div class="slide-card">
+            <span class="badge">Slide 3</span>
+            <h3>Inspecting Class Metadata</h3>
+            <p class="lead">Safe reflection starts with structural inspection before any invocation.</p>
+            <div class="quick-grid">
+                <article class="topic-card">
+                    <h4>Inspect First</h4>
+                    <ul class="topic-list">
+                        <li>Class and package identity</li>
+                        <li>Superclass and interfaces</li>
+                        <li>Public vs declared members</li>
+                        <li>Declared annotations</li>
+                    </ul>
+                </article>
+                <article class="topic-card">
+                    <h4>Common APIs</h4>
+                    <ul class="topic-list">
+                        <li><code>getDeclaredFields()</code></li>
+                        <li><code>getDeclaredMethods()</code></li>
+                        <li><code>getConstructors()</code></li>
+                        <li><code>isAnnotationPresent(...)</code></li>
+                    </ul>
+                </article>
+            </div>
+            <pre class="code-shell">Class&lt;Order&gt; type = Order.class;
+System.out.println(type.getName());
+System.out.println(type.getSuperclass().getSimpleName());
+for (Field field : type.getDeclaredFields()) {
+    System.out.println(field.getName() + " : " + field.getType().getSimpleName());
+}</pre>
+        </div>
+    </section>
+
+    <section class="slide" id="s4">
+        <div class="slide-card">
+            <span class="badge">Slide 4</span>
+            <h3>Working with Fields and Methods</h3>
+            <p class="lead">Dynamic invocation is useful, but it should stay explicit and bounded to trusted code.</p>
+            <div class="quick-grid">
+                <article class="topic-card">
+                    <h4>Field Access Rules</h4>
+                    <ul class="topic-list">
+                        <li>Resolve field by exact name</li>
+                        <li>Use <code>setAccessible(true)</code> with strict scope</li>
+                        <li>Validate expected types before assignment</li>
+                        <li>Fail with clear, actionable errors</li>
+                    </ul>
+                </article>
+                <article class="topic-card">
+                    <h4>Method Invocation Rules</h4>
+                    <ul class="topic-list">
+                        <li>Resolve exact parameter signature</li>
+                        <li>Prepare argument conversion explicitly</li>
+                        <li>Handle <code>InvocationTargetException</code></li>
+                        <li>Cache method references in hot paths</li>
+                    </ul>
+                </article>
+            </div>
+            <pre class="code-shell">User user = new User("Aysel");
+Field nameField = User.class.getDeclaredField("name");
+nameField.setAccessible(true);
+nameField.set(user, "Nigar");
+
+Method greet = User.class.getDeclaredMethod("greet");
+String result = (String) greet.invoke(user);</pre>
+        </div>
+    </section>
+
+    <section class="slide" id="s5">
+        <div class="slide-card">
+            <span class="badge">Slide 5</span>
+            <h3>Annotation Basics</h3>
+            <p class="lead">Annotations add metadata to code elements and become actionable only through tools, processors, or reflection.</p>
+            <div class="quick-grid">
+                <article class="topic-card">
+                    <h4>Meta-Annotations</h4>
+                    <ul class="topic-list">
+                        <li><code>@Target</code> controls allowed location</li>
+                        <li><code>@Retention</code> controls lifecycle visibility</li>
+                        <li><code>@Documented</code> adds API docs visibility</li>
+                        <li><code>@Inherited</code> supports class inheritance</li>
+                    </ul>
+                </article>
+                <article class="topic-card">
+                    <h4>Retention Levels</h4>
+                    <ul class="topic-list">
+                        <li><code>SOURCE</code>: compile phase only</li>
+                        <li><code>CLASS</code>: stored in bytecode</li>
+                        <li><code>RUNTIME</code>: accessible via reflection</li>
+                        <li>Runtime processing requires <code>RUNTIME</code></li>
+                    </ul>
+                </article>
+            </div>
+            <pre class="code-shell">@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface NotBlank {
+    String message() default "Field cannot be blank";
+}</pre>
+        </div>
+    </section>
+
+    <section class="slide" id="s6">
+        <div class="slide-card">
+            <span class="badge">Slide 6</span>
+            <h3>Runtime Annotation Example</h3>
+            <p class="lead">Custom validators can scan annotations and enforce constraints without hard-coding per DTO logic.</p>
+            <div class="quick-grid">
+                <article class="topic-card">
+                    <h4>Validation Flow</h4>
+                    <ul class="topic-list">
+                        <li>Read declared fields</li>
+                        <li>Check annotation presence</li>
+                        <li>Extract runtime value</li>
+                        <li>Collect structured violations</li>
+                    </ul>
+                </article>
+                <article class="topic-card">
+                    <h4>Production Notes</h4>
+                    <ul class="topic-list">
+                        <li>Keep side effects out of validators</li>
+                        <li>Separate scan step from error formatting</li>
+                        <li>Cache metadata per class</li>
+                        <li>Use tests for null/blank/unsupported types</li>
+                    </ul>
+                </article>
+            </div>
+            <pre class="code-shell">for (Field field : dto.getClass().getDeclaredFields()) {
+    if (!field.isAnnotationPresent(NotBlank.class)) continue;
+    field.setAccessible(true);
+    Object value = field.get(dto);
+    if (value == null || value.toString().trim().isEmpty()) {
+        errors.add(field.getName() + " is blank");
+    }
+}</pre>
+        </div>
+    </section>
+
+    <section class="slide" id="s7">
+        <div class="slide-card">
+            <span class="badge">Slide 7</span>
+            <h3>Framework Use Cases</h3>
+            <p class="lead">Spring and JPA combine annotations with reflection to reduce boilerplate and enforce conventions.</p>
+            <div class="quick-grid">
+                <article class="topic-card">
+                    <h4>Spring Runtime Mapping</h4>
+                    <ul class="topic-list">
+                        <li><code>@Component</code> for bean registration</li>
+                        <li><code>@Autowired</code> for dependency wiring</li>
+                        <li><code>@RequestMapping</code> for endpoint mapping</li>
+                        <li>Proxy generation for transactions and AOP</li>
+                    </ul>
+                </article>
+                <article class="topic-card">
+                    <h4>Persistence Mapping</h4>
+                    <ul class="topic-list">
+                        <li><code>@Entity</code>, <code>@Table</code>, <code>@Id</code></li>
+                        <li>Field metadata guides SQL mapping</li>
+                        <li>Reflection hydrates result sets into entities</li>
+                        <li>Metadata caches improve steady-state speed</li>
+                    </ul>
+                </article>
+            </div>
+            <pre class="code-shell">@RestController
+@RequestMapping("/users")
+class UserController {
+    @GetMapping("/{id}")
+    UserDto getById(@PathVariable Long id) { ... }
+}</pre>
+        </div>
+    </section>
+
+    <section class="slide" id="s8">
+        <div class="slide-card">
+            <span class="badge">Slide 8</span>
+            <h3>Safety and Performance Boundaries</h3>
+            <p class="lead">Reflection should be used as infrastructure, not as a default replacement for direct method calls.</p>
+            <div class="quick-grid">
+                <article class="topic-card">
+                    <h4>Main Risks</h4>
+                    <ul class="topic-list">
+                        <li>Encapsulation bypass through private access</li>
+                        <li>Runtime failures from signature mismatch</li>
+                        <li>Higher overhead in critical loops</li>
+                        <li>Security risks on untrusted package scans</li>
+                    </ul>
+                </article>
+                <article class="topic-card">
+                    <h4>Mitigations</h4>
+                    <ul class="topic-list">
+                        <li>Allow-list packages and annotations</li>
+                        <li>Cache resolved metadata handles</li>
+                        <li>Fail fast with deterministic messages</li>
+                        <li>Benchmark hot paths with and without reflection</li>
+                    </ul>
+                </article>
+            </div>
+            <pre class="code-shell">if (!type.getPackageName().startsWith("com.myapp.domain")) {
+    throw new SecurityException("Unsupported type: " + type.getName());
+}
+Method m = methodCache.computeIfAbsent(key, k -> resolveMethod(type, k));</pre>
+        </div>
+    </section>
+
+    <section class="slide" id="s9">
+        <div class="slide-card">
+            <span class="badge">Slide 9</span>
+            <h3>Summary and Checklist</h3>
+            <p class="lead">Use reflection and annotations to automate infrastructure behavior while preserving correctness and observability.</p>
+            <div class="quick-grid">
+                <article class="topic-card">
+                    <h4>Recap</h4>
+                    <ul class="topic-list">
+                        <li>Reflection reads metadata at runtime</li>
+                        <li>Annotations encode declarative intent</li>
+                        <li>Frameworks integrate both for automation</li>
+                        <li>Design boundaries prevent fragile code</li>
+                    </ul>
+                </article>
+                <article class="topic-card">
+                    <h4>Implementation Checklist</h4>
+                    <ul class="topic-list">
+                        <li>Document every reflection entry point</li>
+                        <li>Add tests for missing/invalid annotations</li>
+                        <li>Cache metadata for repeated operations</li>
+                        <li>Prefer direct code on latency-sensitive paths</li>
+                    </ul>
+                </article>
+            </div>
+            <pre class="code-shell">Takeaway:
+Use direct code first.
+Use reflection only when dynamic behavior is required.
+Add guardrails, tests, and metrics before production use.</pre>
+        </div>
+    </section>
+
+    <div class="deck-controls" role="navigation" aria-label="Slide navigation controls">
+        <button class="nav-btn" id="prevBtn" type="button">Previous</button>
+        <div class="progress-area">
+            <div class="counter" id="slideCounter">Slide 1 of 9</div>
+            <input id="slideRange" type="range" min="1" max="9" value="1"/>
+        </div>
+        <button class="nav-btn" id="nextBtn" type="button">Next</button>
+    </div>
+
+    <a class="home-btn" href="index.html" aria-label="Back to lessons">All Lessons</a>
+
+    <button id="fullscreenBtn" class="fullscreen-btn" type="button" aria-label="Enter fullscreen" title="Enter fullscreen">
+        <svg class="fullscreen-icon-enter" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 4H4v5"></path>
+            <path d="M15 4h5v5"></path>
+            <path d="M4 15v5h5"></path>
+            <path d="M20 15v5h-5"></path>
+        </svg>
+        <svg class="fullscreen-icon-exit" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 9H4V4"></path>
+            <path d="M15 9h5V4"></path>
+            <path d="M4 20v-5h5"></path>
+            <path d="M20 20v-5h-5"></path>
+        </svg>
+    </button>
+</main>
+
+<script>
+    (() => {
+        const slides = Array.from(document.querySelectorAll(".slide"));
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const slideRange = document.getElementById("slideRange");
+        const slideCounter = document.getElementById("slideCounter");
+        const fullscreenBtn = document.getElementById("fullscreenBtn");
+
+        let currentIndex = 0;
+
+        function parseHashIndex() {
+            if (!window.location.hash) return 0;
+            const id = window.location.hash.replace("#", "");
+            const idx = slides.findIndex((slide) => slide.id === id);
+            return idx >= 0 ? idx : 0;
+        }
+
+        function updateHash() {
+            const id = slides[currentIndex]?.id;
+            if (!id) return;
+            if (window.location.hash === `#${id}`) return;
+            window.history.replaceState(null, "", `#${id}`);
+        }
+
+        function showSlide(index, updateUrl = true) {
+            currentIndex = Math.max(0, Math.min(index, slides.length - 1));
+            slides.forEach((slide, i) => {
+                const active = i === currentIndex;
+                slide.classList.toggle("active", active);
+                slide.setAttribute("aria-hidden", String(!active));
+                if (active) {
+                    slide.scrollTop = 0;
+                    const card = slide.querySelector(".slide-card");
+                    if (card) {
+                        card.scrollTop = 0;
+                    }
+                }
+            });
+
+            slideRange.value = String(currentIndex + 1);
+            slideCounter.textContent = `Slide ${currentIndex + 1} of ${slides.length}`;
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === slides.length - 1;
+
+            if (updateUrl) {
+                updateHash();
+            }
+        }
+
+        function goNext() {
+            if (currentIndex < slides.length - 1) {
+                showSlide(currentIndex + 1);
+            }
+        }
+
+        function goPrevious() {
+            if (currentIndex > 0) {
+                showSlide(currentIndex - 1);
+            }
+        }
+
+        async function toggleFullscreen() {
+            try {
+                if (!document.fullscreenElement) {
+                    await document.documentElement.requestFullscreen();
+                } else {
+                    await document.exitFullscreen();
+                }
+            } catch (_error) {
+                // Ignore browser fullscreen errors.
+            }
+        }
+
+        function syncFullscreenUi() {
+            const isFullscreen = Boolean(document.fullscreenElement);
+            document.body.classList.toggle("is-fullscreen", isFullscreen);
+            const label = isFullscreen ? "Exit fullscreen" : "Enter fullscreen";
+            fullscreenBtn.setAttribute("aria-label", label);
+            fullscreenBtn.title = label;
+        }
+
+        slideRange.max = String(slides.length);
+        prevBtn.addEventListener("click", goPrevious);
+        nextBtn.addEventListener("click", goNext);
+        slideRange.addEventListener("input", (event) => {
+            const value = Number(event.target.value) - 1;
+            showSlide(value);
+        });
+
+        fullscreenBtn.addEventListener("click", toggleFullscreen);
+        document.addEventListener("fullscreenchange", syncFullscreenUi);
+        window.addEventListener("hashchange", () => showSlide(parseHashIndex(), false));
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "ArrowRight" || event.key === "PageDown") {
+                event.preventDefault();
+                goNext();
+            } else if (event.key === "ArrowLeft" || event.key === "PageUp") {
+                event.preventDefault();
+                goPrevious();
+            } else if (event.key === "Home") {
+                event.preventDefault();
+                showSlide(0);
+            } else if (event.key === "End") {
+                event.preventDefault();
+                showSlide(slides.length - 1);
+            } else if (event.key.toLowerCase() === "f") {
+                const target = event.target;
+                const isTyping =
+                    target &&
+                    (target.tagName === "INPUT" ||
+                        target.tagName === "TEXTAREA" ||
+                        target.isContentEditable);
+                if (!isTyping) {
+                    event.preventDefault();
+                    toggleFullscreen();
+                }
+            }
+        });
+
+        showSlide(parseHashIndex(), false);
+        syncFullscreenUi();
+    })();
+</script>
+</body>
+</html>
