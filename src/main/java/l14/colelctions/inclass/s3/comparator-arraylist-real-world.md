@@ -100,7 +100,7 @@ public class Main {
 }
 ```
 
-İzah: E-commerce saytında user filter seçiminə görə fərqli sıralama tətbiq olunur.
+İzah: E-commerce saytında userEntity filter seçiminə görə fərqli sıralama tətbiq olunur.
 
 ---
 

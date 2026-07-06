@@ -34,27 +34,27 @@ If a version number appears, Git is installed correctly.
 Set your name:
 
 ```bash
-git config --global user.name "Your Name"
+git config --global userEntity.name "Your Name"
 ```
 
 Example:
 
 ```bash
-git config --global user.name "Ismet"
+git config --global userEntity.name "Ismet"
 ```
 
 Set your email:
 
 ```bash
-git config --global user.email "ismet@example.com"
+git config --global userEntity.email "ismet@example.com"
 ```
 
 If you want to use a different name/email for only one project, go to that project directory and set local config (without `--global`):
 
 ```bash
 cd /path/to/project
-git config user.name "John Smith"
-git config user.email "jsmith@seas.upenn.edu"
+git config userEntity.name "John Smith"
+git config userEntity.email "jsmith@seas.upenn.edu"
 ```
 
 This affects only the current repository.

@@ -302,7 +302,7 @@ Runtime conversion/parsing errors:
 int n = Integer.parseInt("12A"); // NumberFormatException
 ```
 
-When reading user input, validate before converting.
+When reading userEntity input, validate before converting.
 
 ## 6. Operators in Java
 
@@ -449,7 +449,7 @@ System.out.printf("Name: %-10s | Age: %2d | GPA: %.2f%n", "Aylin", 21, 3.756);
 Formatting tips:
 
 - Use `%n` (portable newline) instead of `\n`
-- Limit decimals for user-facing values (`%.2f`)
+- Limit decimals for userEntity-facing values (`%.2f`)
 - Align columns for tables (`%-10s`, `%8d`)
 
 ## 8. Debugging Small Logic Programs

@@ -90,7 +90,7 @@ A Java class named `Task03EasyRangePrinter` with runnable `main`.
 ### Instructions
 
 1. Set a fixed PIN constant in code (example: `1234`).
-2. Ask user for PIN using a `do-while` loop.
+2. Ask userEntity for PIN using a `do-while` loop.
 3. Allow maximum 3 attempts.
 4. If correct, print success and stop.
 5. If attempts are exhausted, print account locked message.
@@ -176,7 +176,7 @@ A Java class named `Task07MediumMultiplicationGrid` with runnable `main`.
 2. In `main`, repeatedly read two integers and an operator (`+`, `-`, `*`, `/`).
 3. Route operations via `switch` inside `calculate`.
 4. Handle division by zero with a safe message.
-5. Ask user whether to continue after each calculation.
+5. Ask userEntity whether to continue after each calculation.
 
 ### Expected Result
 
@@ -244,7 +244,7 @@ A Java class named `Task10HardPrimeRangeChecker` with runnable `main`.
 2. Use `switch` for command routing.
 3. Put each conversion in its own method.
 4. Handle unsupported menu options without terminating the app.
-5. Keep running until user chooses `0`.
+5. Keep running until userEntity chooses `0`.
 
 ### Expected Result
 
@@ -268,7 +268,7 @@ A Java class named `Task11HardMenuDrivenConverter` with runnable `main`.
    - `isCorrectAnswer(...)`
    - `printFinalReport(...)`
 5. After final score, assign grade using `if/else` (example: `A/B/C/F`).
-6. Ask user if they want to restart; if yes, run quiz again.
+6. Ask userEntity if they want to restart; if yes, run quiz again.
 
 ### Expected Result
 

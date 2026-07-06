@@ -272,7 +272,7 @@ A Java class named `Task11HardClassroomReport` with runnable `main`.
    - `0` Exit
 3. Keep data in arrays (or array + count pattern).
 4. Use methods and encapsulation (no public mutable fields).
-5. Keep loop running until user exits.
+5. Keep loop running until userEntity exits.
 
 ### Expected Result
 

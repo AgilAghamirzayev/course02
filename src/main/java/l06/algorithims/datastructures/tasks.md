@@ -256,7 +256,7 @@ A Java class named `Task11HardNumberOfIslands` with runnable `main`.
    - `4` Merge Intervals
    - `0` Exit
 2. Route each option to its own method.
-3. Keep menu in loop until user chooses exit.
+3. Keep menu in loop until userEntity chooses exit.
 4. Print time complexity line for the selected algorithm.
 5. Handle invalid menu inputs gracefully.
 

@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: user-service
+
+  datasource:
+    username: admin
+    password: admin
+    url: jdbc:postgresql://preprod.texnoera.az:8889/bankdb
+
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create

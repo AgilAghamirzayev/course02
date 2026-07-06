@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: user-service
+
+  datasource:
+    username: admin
+    password: admin
+    url: jdbc:postgresql://dev.texnoera.az:8889/bankdb
+
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+
+
+mock:
+  service:
+    json-placeholder:
+      url: https://jsonplaceholder.typicode.com/posts

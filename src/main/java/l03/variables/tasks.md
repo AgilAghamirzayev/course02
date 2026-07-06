@@ -168,7 +168,7 @@ A Java class named `Task07MediumCastingData` with runnable `main`.
    - `WRITE = 2`
    - `EXPORT = 4`
    - `AUDIT = 8`
-2. Build a user permission mask using `|`.
+2. Build a userEntity permission mask using `|`.
 3. Create booleans using comparisons such as `(mask & READ) != 0`.
 4. Update mask with compound operators (`|=`, `&=`, `^=`) and print each state.
 5. Print decimal and binary forms of the final mask.

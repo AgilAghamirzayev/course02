@@ -356,7 +356,7 @@ with Spring Boot, PostgreSQL, Docker, and Kubernetes fundamentals.
 - [ ] Postman workflow and API verification
 - [ ] Clean endpoint naming and response standards
 
-### Lesson 34: Configuration, Profiles, Logging, and API Docs
+### Lesson 34: Configuration, Profiles, Logging, and API Docs, Lombok
 
 **In-class coverage:**
 
