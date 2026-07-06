@@ -255,7 +255,7 @@ A Java class named `Task11HardObjectComparisonLab` with runnable `main`.
    - calculate and print monthly pay
 3. Use array or array + count pattern for storage.
 4. Ensure each employee has unique `employeeId` using `equals`/`hashCode`.
-5. Keep app loop running until user selects exit.
+5. Keep app loop running until userEntity selects exit.
 
 ### Expected Result
 

@@ -127,7 +127,7 @@ A Java class named `Task05MediumMatrixReport` with runnable `main`.
 ### Instructions
 
 1. Build a 2D `String` array for theater seats (`"A1"`, `"A2"`, ...).
-2. Ask user for a seat code.
+2. Ask userEntity for a seat code.
 3. Search matrix and print row/column if found.
 4. Print `Seat not found` if missing.
 5. Add a boolean flag to avoid duplicate result prints.
@@ -136,7 +136,7 @@ A Java class named `Task05MediumMatrixReport` with runnable `main`.
 
 - Correct 2D search logic
 - Proper found/not-found handling
-- Clear user output
+- Clear userEntity output
 
 ### Deliverable
 
@@ -260,7 +260,7 @@ A Java class named `Task11HardUsernameValidator` with runnable `main`.
    - `3` Search student by name
    - `0` Exit
 3. Use loops + methods + String comparisons (`equalsIgnoreCase`).
-4. Keep menu running until user exits.
+4. Keep menu running until userEntity exits.
 
 ### Expected Result
 

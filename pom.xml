@@ -7,6 +7,11 @@
     <groupId>com.agile</groupId>
     <artifactId>course02</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>lesson29-jdbc</module>
+        <module>lesson30-spring-intro</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

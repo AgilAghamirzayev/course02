@@ -610,13 +610,13 @@ for (Field field : type.getDeclaredFields()) {
                     </ul>
                 </article>
             </div>
-            <pre class="code-shell">User user = new User("Aysel");
+            <pre class="code-shell">User userEntity = new User("Aysel");
 Field nameField = User.class.getDeclaredField("name");
 nameField.setAccessible(true);
-nameField.set(user, "Nigar");
+nameField.set(userEntity, "Nigar");
 
 Method greet = User.class.getDeclaredMethod("greet");
-String result = (String) greet.invoke(user);</pre>
+String result = (String) greet.invoke(userEntity);</pre>
         </div>
     </section>
 

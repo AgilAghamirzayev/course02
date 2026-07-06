@@ -67,7 +67,7 @@ Package `l11.homework.task02` with enum + runnable `Task02Main`.
 ### Instructions
 
 1. Create enum `OrderStatus` with at least 5 statuses.
-2. In `Task03Main`, simulate user input strings.
+2. In `Task03Main`, simulate userEntity input strings.
 3. Convert with `valueOf` safely (handle invalid input with `try/catch`).
 
 ### Expected Result

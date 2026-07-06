@@ -209,7 +209,7 @@ A Java class named `Task09HardTestableNotificationService` with runnable `main`.
 ### Instructions
 
 1. Create interface `UserRepository` with methods:
-   - `void save(User user)`
+   - `void save(User userEntity)`
    - `User findById(int id)`
 2. Implement:
    - `InMemoryUserRepository`

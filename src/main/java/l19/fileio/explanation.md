@@ -257,7 +257,7 @@ Backend file code must protect against security, corruption, and concurrency iss
 
 ### 6.1 Path traversal protection
 
-If user input is part of a file path, resolve and normalize against a fixed base directory.
+If userEntity input is part of a file path, resolve and normalize against a fixed base directory.
 
 ```java
 import java.nio.file.Path;
@@ -346,7 +346,7 @@ This prevents accidental overwrite races.
 3. Benchmark unbuffered vs buffered copy for a large file.
 4. Create a utility that writes a CSV report using `Files.newBufferedWriter`.
 5. Build a directory scanner that lists only `.log` files recursively.
-6. Implement safe user path resolution and reject traversal attempts.
+6. Implement safe userEntity path resolution and reject traversal attempts.
 7. Implement atomic config file update with temp file + move.
 8. Refactor one old `File`-based utility to `Path` + `Files`.
 
